@@ -1,9 +1,7 @@
-import { request } from "@/http";
 
-interface phoneLoginInterface {
-  phone: string,
-  password: string
-}
+import { request } from "@/http";
+// 引用接口
+import { phoneLoginInterface } from "@/interface/public/login";
 
 
 export function phoneLogin(option: phoneLoginInterface) {

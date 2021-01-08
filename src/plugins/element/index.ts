@@ -1,14 +1,21 @@
 import {
+  // 组件
   ElButton,
+  ElForm,
+  ElFormItem,
+  ElInput,
+
+
+  // 插件
   ElLoading,
   ElMessage
 } from "element-plus";
 
-console.log("element-plus")
-
-
 const components = [
-  ElButton
+  ElButton,
+  ElForm,
+  ElFormItem,
+  ElInput,
 ];
 
 const plugins = [
