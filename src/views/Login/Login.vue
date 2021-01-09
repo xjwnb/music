@@ -31,9 +31,12 @@ import { phoneLoginInterface } from "@/interface/public/login";
 import { phoneLogin } from "@/api/login/index";
 // ele
 import { ElMessage } from "element-plus";
-
 // hooks
 import { useLogiHandle } from "@/hooks/login/useLoginHandle";
+// vuex
+import store from "@/store";
+// mutation 函数名
+import { LOGIN_HANDLE } from "@/store/mutation-types";
 
 export default defineComponent({
   name: "Login",
@@ -67,6 +70,7 @@ export default defineComponent({
           // 获取登录后的信息
           try {
             let result = await useLogiHandle(this.loginFormData);
+            console.log(result);
             // 登录信息返回 400 失败
             if ((result as any).code === 400) {
               ElMessage.warning({
@@ -79,6 +83,9 @@ export default defineComponent({
                 message: "登录成功！",
                 type: "success",
               });
+              // vuex 修改登录状态
+              store.commit(LOGIN_HANDLE);
+              this.$router.push("/");
             }
           } catch (error) {
             // console.log(error);
@@ -112,7 +119,8 @@ export default defineComponent({
     width: 25rem;
     padding: 2rem;
     border-radius: 0.5rem;
-    border: 1px solid #000000;
+    // border: 1px solid #000000;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 
     .login-title {
       text-align: center;

@@ -3,8 +3,11 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+// iconfont
+import "@/assets/iconfont/iconfont.css";
 
 const app = createApp(App)
+
 
 // element-plus 引入配置文件
 import { getEle } from "./plugins/element/";
