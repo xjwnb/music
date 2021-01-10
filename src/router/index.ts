@@ -61,13 +61,13 @@ const routes: Array<RouteRecordRaw> = [
     path: "/discover",
     name: "Discover",
     component: MainLayout,
-    alias: "/discover/recommend",
     // component: () => import(/* webpackChunkName: "video" */ "@/views/Video/index.vue")
     children: [
       {
         path: "",
         name: "DiscoverInfo",
-        component: () => import(/* webpackChunkName: "Recommend" */ "@/views/Recommend/index.vue")
+        redirect: { name: "Recommend" },
+        // component: () => import(/* webpackChunkName: "Recommend" */ "@/views/Recommend/index.vue")
         
       },
       {
