@@ -226,6 +226,7 @@ export default defineComponent({
       background-color: #e9eef3;
       color: #333;
       padding: 0;
+      min-width: 1260px;
       // line-height: 160px;
     }
 

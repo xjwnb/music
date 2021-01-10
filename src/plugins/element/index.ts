@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-08 18:39:20
- * @LastEditTime: 2021-01-09 18:53:56
+ * @LastEditTime: 2021-01-10 15:34:53
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\plugins\element\index.ts
@@ -21,6 +21,9 @@ import {
   ElMenu,
   ElMenuItem,
   ElSubmenu,
+  ElCarousel,
+  ElCarouselItem,
+  ElImage,
 
   // 插件
   ElLoading,
@@ -40,7 +43,10 @@ const components = [
   ElFooter,
   ElMenu,
   ElMenuItem,
-  ElSubmenu
+  ElSubmenu,
+  ElCarousel,
+  ElCarouselItem,
+  ElImage,
 ];
 
 const plugins = [
