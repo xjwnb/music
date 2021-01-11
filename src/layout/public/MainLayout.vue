@@ -238,7 +238,7 @@ export default defineComponent({
       right: 0;
       left: 12rem;
       bottom: 5rem;
-      background-color: #e9eef3;
+      // background-color: #e9eef3;
       color: #333;
       padding: 0;
       min-width: 1260px;
