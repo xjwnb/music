@@ -1,3 +1,11 @@
+<!--
+ * @Author: your name
+ * @Date: 2021-01-08 16:28:55
+ * @LastEditTime: 2021-01-11 16:39:39
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \music\src\App.vue
+-->
 
 <template>
 <!--   <div id="nav">
@@ -13,6 +21,7 @@ body, html {
   height: 100%;
   margin: 0;
   overflow-x: hidden;
+  overflow-y: hidden;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

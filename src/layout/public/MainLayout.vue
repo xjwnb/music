@@ -152,6 +152,7 @@ export default defineComponent({
   .el-container {
     width: 100%;
     height: 100%;
+    position: relative;
 
     .el-header {
       // display: flex;
@@ -160,6 +161,8 @@ export default defineComponent({
       padding: 0;
       position: relative;
       height: 3rem !important;
+      position: relative;
+      top: 0;
 
       .header-left {
         display: flex;
@@ -217,6 +220,11 @@ export default defineComponent({
     }
 
     .el-aside {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      bottom: 5rem;
       background-color: #d3dce6;
       color: #333;
       width: 12rem !important;
@@ -225,10 +233,16 @@ export default defineComponent({
     }
 
     .el-main {
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 12rem;
+      bottom: 5rem;
       background-color: #e9eef3;
       color: #333;
       padding: 0;
       min-width: 1260px;
+
       // line-height: 160px;
       .main-content {
         margin: 1rem auto;
@@ -241,6 +255,10 @@ export default defineComponent({
       color: #333;
       height: 5rem !important;
       padding: 0;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      left: 0;
     }
   }
 }
