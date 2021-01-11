@@ -1,4 +1,3 @@
-
 <template>
   <div class="recommend-page">
     <!-- banner -->
@@ -13,7 +12,7 @@
           <div class="recommend-song-content">
             <song-sheet-com
               v-for="songSheetData in personalizedSongData"
-              :songSheetData="songSheetData"
+              :songSheetData="songSheetData" @click="songSheetClickHandle"
             ></song-sheet-com>
           </div>
         </template>
@@ -71,6 +70,11 @@ export default defineComponent({
         console.log(err);
       });
   },
+  methods: {
+    songSheetClickHandle() {
+      
+    }
+  }
 });
 </script>
 

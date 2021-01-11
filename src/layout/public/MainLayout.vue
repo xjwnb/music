@@ -63,7 +63,10 @@
           </div>
         </el-main>
       </el-container>
-      <el-footer>FOOTER</el-footer>
+      <!-- 底部 footer -->
+      <el-footer>
+        <audio-player></audio-player>
+      </el-footer>
     </el-container>
   </div>
 </template>
@@ -71,11 +74,17 @@
 
 <script lang="ts">
 import { defineComponent, watch } from "vue";
+// vuex
 import { mapState } from "vuex";
 import { ASIDE_NAV } from "@/store/state-types";
+// 播放器
+import AudioPlayer from "@/common/AudioPlayer/index.vue";
 
 export default defineComponent({
   name: "MainLayout",
+  components: {
+    AudioPlayer
+  },
   setup(props, { attrs, slots, emit }) {},
   data() {
     return {

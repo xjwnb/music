@@ -16,6 +16,15 @@
   url('iconfont-1.svg?t=1610345640835#iconfont') format('svg'); /* iOS 4.1- */
 }
 
+@font-face {font-family: "iconfont";
+  src: url('iconfont-2.eot?t=1610361377250'); /* IE9 */
+  src: url('iconfont-2.eot?t=1610361377250#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('data:application/x-font-woff2;charset=utf-8;base64,d09GMgABAAAAAANUAAsAAAAAB2wAAAMGAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHEIGVgCDHAqCLIIPATYCJAMQCwoABCAFhG0HRBt9BsiemjyBBBJYgIJVAOBsiIfv9/v92uceTCQ+iPh0kmnyBNMhisVGKl+T5t/sT93rMwXkMCgAUAIwSI5s1pfLuPPUPyydyxPgRlOz9TIVhqllALve1kUH3Xjmf+DHCRe9trl9nsvptYACmd/Ocltr0/V8TMDA0sDGmlREBRKQN4xd0BIPE6jWr5+0tnrjTsiTmaMCcckcA/IyYVlmuUqhvGJhFm80lek+fgJeg+/HL6ORR1JWMCeut1U2LH21c1uVC/+Cgx5BMp0TbBkFZoFMnFa6TyhRepaiWu2umgcqVUpM1bZ5buv//8jKhkWW2tA/XiLKmdRaUILGwoVJHJKCb5tJgm9bKRJ8EG1llN0ArjCr930hpJ6ekpLTX3YeVR6cW89rZNSW7u/br+oV8uTrHi1793zfY+0tuPX23ebt99Kn33YefPTaQ7d6jXp/6PrjkrS7WaiyQb3dul57MEd2IHfxnd3oYUGtc61ISHCTwl3z+7/WvtgP8lHU+RNmy91Fd/boD/SiefmpBK5Ta6k1H2a+1vGNpGDqK4z/WVN2Q87GG3lN+Y3yrKP9EGjLq7qLAf5XUmU5HE7xlGUAFAvp37/4jd3699yR4oW/8/QMPrRuaIGh/1QYJnmhks6SNy/pWJc1mWnJWZE7Yt2bDQ4ekVCtGu87T7PZKbRtnamESm0Jkgp9KFQapWXWLMrUKKFcpUVUm7FmeY0WnCJyFaZdBQiNHiOp945Co8+0zPqBMu1+oVxjKKi2Eco3rDEeDK3gxBDExuZJzKwopLZNoLBwO3FS3+BpWcDZTXiGxfDI4HA+t4aEhE8xJXPMGRWCYsqjAK8GxxHfj3DMI5dYYnBGiHj+0BCtetGgFQWArOIIg0DYMNNJGGOJhKjXWkCFz29HOFI+A28oqgrvRnAZrHNsxKDhDrQ16rBT0a08k3GMY5QgUBjFRQLYauAkfCsdweLqfi7CIgyaGZCMzTeEmtGu6sHltcELFLEyzKtypCgiR5ny0ygVKctNmBG6LMw9ZTxOKHQAAAAA') format('woff2'),
+  url('iconfont-2.woff?t=1610361377250') format('woff'),
+  url('iconfont-2.ttf?t=1610361377250') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
+  url('iconfont-2.svg?t=1610361377250#iconfont') format('svg'); /* iOS 4.1- */
+}
+
 .iconfont {
   font-family: "iconfont" !important;
   font-size: 16px;
@@ -34,4 +43,16 @@
 
 .icon-icon_play:before {
   content: "\e60f";
+}
+
+.icon-houtui:before {
+  content: "\e74e";
+}
+
+.icon-qianjin:before {
+  content: "\e750";
+}
+
+.icon-zanting:before {
+  content: "\e619";
 }
