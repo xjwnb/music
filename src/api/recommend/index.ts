@@ -9,7 +9,7 @@ export function getRecommendBanner() {
 }
 
 // 推荐歌单
-export function getPersonalized() {
+export function getPersonalizedSong() {
   return request({
     url: "/personalized?limit=10"
   })

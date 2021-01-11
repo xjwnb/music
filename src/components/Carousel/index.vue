@@ -1,8 +1,12 @@
+
 <template>
   <div class="carousel">
     <el-carousel :interval="4000" type="card" height="250px">
-      <el-carousel-item v-for="carousel in carouselData" :key="carousel.imageUrl">
-        <el-image lazy :src="carousel.imageUrl"></el-image>
+      <el-carousel-item
+        v-for="carousel in carouselData"
+        :key="carousel.imageUrl"
+      >
+        <el-image :src="carousel.imageUrl" ></el-image>
       </el-carousel-item>
     </el-carousel>
   </div>

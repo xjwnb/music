@@ -58,7 +58,9 @@
           <!-- <router-view>
             <keep-alive></keep-alive>
           </router-view> -->
-          <router-view />
+          <div class="main-content">
+            <router-view />
+          </div>
         </el-main>
       </el-container>
       <el-footer>FOOTER</el-footer>
@@ -87,7 +89,7 @@ export default defineComponent({
     },
     navChildrenDefaultActive() {
       return this.$route.path;
-    }
+    },
   },
   watch: {
     $route(to: any, from) {
@@ -228,6 +230,10 @@ export default defineComponent({
       padding: 0;
       min-width: 1260px;
       // line-height: 160px;
+      .main-content {
+        margin: 1rem auto;
+        width: 1260px;
+      }
     }
 
     .el-footer {
