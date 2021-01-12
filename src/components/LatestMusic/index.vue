@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-12 17:28:06
- * @LastEditTime: 2021-01-12 18:02:46
+ * @LastEditTime: 2021-01-12 18:52:05
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\components\LatestMusic\index.vue
@@ -13,10 +13,10 @@
     </div>
     <div class="lastest-music-info">
       <div class="lastest-music-info-song-name">
-        {{ latestMusicData.name }}
+        <span>{{ latestMusicData.name }}</span>
       </div>
       <div class="lastest-music-info-song-artists">
-        {{ latestMusicData.artists.name }}
+        <span>{{ latestMusicData.song.artists[0].name }}</span>
       </div>
     </div>
   </div>
@@ -35,9 +35,46 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .lastest-music {
-  width: 30%;
-  height: 10rem;
-  background-color: #33eec5;
+  width: 33%;
+  height: 8rem;
   display: flex;
+  align-items: center;
+  padding: 0 .5rem;
+  box-sizing: border-box;
+  border-top: 1px solid #eeeeee;
+  transition: all 1s;
+
+  &:hover {
+    background-color: #eeeeee;
+  }
+  // display: inline-block;
+  .lastest-music-img {
+    margin-right: 1rem;
+    cursor: pointer;
+    .el-image {
+      width: 6rem;
+      height: 6rem;
+      border-radius: .3rem;
+    }
+  }
+  .lastest-music-info {
+    .lastest-music-info-song-artists {
+      span {
+        color: #c7c7c7;
+        font-size: .8rem;
+        transition: color 1s;
+
+        &:hover {
+          color: #a8a8a8;
+        }
+      }
+    }
+    span {
+      cursor: pointer;
+    }
+  }
+}
+.lastest-music:nth-child(4n) {
+  border-bottom: 1px solid #eeeeee;
 }
 </style>

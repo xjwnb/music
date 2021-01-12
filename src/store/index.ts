@@ -1,16 +1,16 @@
 /*
  * @Author: your name
  * @Date: 2021-01-08 16:28:55
- * @LastEditTime: 2021-01-12 16:03:25
+ * @LastEditTime: 2021-01-12 21:57:41
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\store\index.ts
  */
 import { createStore } from 'vuex';
 // mutation 函数名
-import { LOGIN_HANDLE, AUDIO_ID_CHANGE, AUDIO_LIST_ADD, USER_INFO_SET } from "./mutation-types";
+import { LOGIN_HANDLE, AUDIO_ID_CHANGE, AUDIO_LIST_ADD, USER_INFO_SET, AUDIO_INFO_CHANGE } from "./mutation-types";
 // state 属性名
-import { IS_LOGIN, ASIDE_NAV, AUDIO_ID, AUDIO_LIST, USER_INFO } from "./state-types";
+import { IS_LOGIN, ASIDE_NAV, AUDIO_ID, AUDIO_LIST, USER_INFO, AUDIO_INFO } from "./state-types";
 // getter 
 import { GET_AUDIO_ID } from "./getter-types";
 // const 
@@ -20,11 +20,12 @@ import { asideNavInfo } from "@/const/public/index";
 
 export default createStore({
   state: {
-    
+
     [IS_LOGIN]: false as boolean,             // 是否登录
     [USER_INFO]: {},                 // 用户信息
     [ASIDE_NAV]: asideNavInfo,     // aside 导航信息
     [AUDIO_ID]: "" as string,                // audio id
+    [AUDIO_INFO]: {},                  // 当前播放歌曲信息
     [AUDIO_LIST]: [] as any[],              // audio 播放列表
   },
   getters: {
@@ -45,6 +46,10 @@ export default createStore({
     [AUDIO_ID_CHANGE](state, payload) {
       state[AUDIO_ID] = payload.id;
     },
+    // 设置当前播放歌曲信息
+    [AUDIO_INFO_CHANGE](state, payload) {
+      state[AUDIO_INFO] = payload.audioInfo;
+    },
     // 增加播放列表歌曲
     [AUDIO_LIST_ADD](state, payload: any) {
       let audioData: any | any[] = payload.audioData;
@@ -54,13 +59,15 @@ export default createStore({
           hasAudioData ? null : state[AUDIO_LIST].unshift(audioItem);
         })
       } else {
-        state[AUDIO_LIST].unshift(payload.audioData);
+        let hasSameAudio = state[AUDIO_LIST].some(audio => audio.id === audioData.id);
+        hasSameAudio ? null : state[AUDIO_LIST].unshift(payload.audioData);
       }
     },
 
     // 格式化
     formatState(state) {
       state[AUDIO_ID] = "";
+      state[AUDIO_INFO] = {}
       state[AUDIO_LIST] = [];
     }
   },

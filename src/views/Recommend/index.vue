@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-09 22:49:56
- * @LastEditTime: 2021-01-12 17:00:50
+ * @LastEditTime: 2021-01-12 19:42:50
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\Recommend\index.vue
@@ -20,8 +20,24 @@
           <div class="recommend-song-content">
             <song-sheet-com
               v-for="songSheetData in personalizedSongData"
-              :songSheetData="songSheetData" @click="songSheetClickHandle(songSheetData)"
+              :songSheetData="songSheetData"
+              @click="songSheetClickHandle(songSheetData)"
             ></song-sheet-com>
+          </div>
+        </template>
+      </classify-show-com>
+    </div>
+    <!-- 最新音乐 -->
+    <div class="recommend-latest-music">
+      <classify-show-com>
+        <template v-slot:title> 最新音乐 </template>
+        <template v-slot:content>
+          <div class="recommend-latest-music-content">
+            <latest-music-com
+              v-for="latestMusic in latestMusicData"
+              :latestMusicData="latestMusic"
+              @click="latestMusicClickHandle(latestMusic)"
+            ></latest-music-com>
           </div>
         </template>
       </classify-show-com>
@@ -33,11 +49,31 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 // 请求
-import { getRecommendBanner, getPersonalizedSong } from "@/api/recommend/index";
+import {
+  getRecommendBanner,
+  getPersonalizedSong,
+  getPersonalizedNewSong,
+} from "@/api/recommend/index";
 // 组件
-import { CarouselCom, ClassifyShowCom, SongSheetCom } from "@/components/index";
+import {
+  CarouselCom,
+  ClassifyShowCom,
+  SongSheetCom,
+  LatestMusicCom,
+} from "@/components/index";
 // audioHooks
-import { useAddAudioListHooks, useChangeAudioIdHooks } from "@/hooks/audioHooks";
+import {
+  useAddAudioListHooks,
+  useChangeAudioIdHooks,
+} from "@/hooks/audioHooks";
+// store
+import store from "@/store";
+// mutations
+import {
+  AUDIO_ID_CHANGE,
+  AUDIO_INFO_CHANGE,
+  AUDIO_LIST_ADD,
+} from "@/store/mutation-types";
 
 export default defineComponent({
   name: "Recommend",
@@ -45,11 +81,13 @@ export default defineComponent({
     CarouselCom,
     ClassifyShowCom,
     SongSheetCom,
+    LatestMusicCom,
   },
   data() {
     return {
       bannersData: [], // banner 数据
       personalizedSongData: [], // 推荐歌单数据
+      latestMusicData: [], // 最新音乐数据
     };
   },
   mounted() {
@@ -79,6 +117,19 @@ export default defineComponent({
       .catch((err) => {
         console.log(err);
       });
+
+    // 获取最新音乐
+    getPersonalizedNewSong()
+      .then((res) => {
+        console.log("最新音乐", res);
+        let data = (res as any).data;
+        if (data.code === 200) {
+          this.latestMusicData = data.result;
+        }
+      })
+      .catch((err) => {
+        console.log("最新音乐", err);
+      });
   },
   methods: {
     // 歌单点击事件
@@ -88,9 +139,22 @@ export default defineComponent({
       // 添加到 播放列表中
       useAddAudioListHooks(audioData); */
       // (this as any).$bus.emit("audioPlay");
-
-    }
-  }
+    },
+    // 最新音乐点击
+    latestMusicClickHandle(latestMusic: any) {
+      console.log(latestMusic);
+      let { id } = latestMusic;
+      store.commit(AUDIO_ID_CHANGE, { id: id });
+      store.commit(AUDIO_INFO_CHANGE, {
+        audioInfo: latestMusic,
+      });
+      store.commit(AUDIO_LIST_ADD, {
+        audioData: latestMusic,
+      });
+      // 触发播放音频
+      (this as any).$bus.emit("audioPlay");
+    },
+  },
 });
 </script>
 
@@ -103,12 +167,26 @@ export default defineComponent({
     margin-bottom: 1.5rem;
   }
   .recommend-song-sheet {
+    margin-bottom: 7rem;
     .recommend-song-content {
       height: 34rem;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-content: space-between;
+    }
+  }
+
+  // 最新音乐
+  .recommend-latest-music {
+    .recommend-latest-music-content {
+      width: 100%;
+      height: 32rem;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      box-sizing: border-box;
     }
   }
 }
