@@ -36,7 +36,7 @@ import { useLogiHandle } from "@/hooks/login/useLoginHandle";
 // vuex
 import store from "@/store";
 // mutation 函数名
-import { LOGIN_HANDLE } from "@/store/mutation-types";
+import { LOGIN_HANDLE, USER_INFO_SET } from "@/store/mutation-types";
 
 export default defineComponent({
   name: "Login",
@@ -83,6 +83,9 @@ export default defineComponent({
                 message: "登录成功！",
                 type: "success",
               });
+              let userAccount = (result as any).account;
+              console.log("account:", (result as any).account);
+              store.commit(USER_INFO_SET, userAccount);
               // vuex 修改登录状态
               store.commit(LOGIN_HANDLE);
               this.$router.push("/");

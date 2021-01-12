@@ -1,3 +1,11 @@
+<!--
+ * @Author: your name
+ * @Date: 2021-01-09 22:49:56
+ * @LastEditTime: 2021-01-12 17:00:50
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \music\src\views\Recommend\index.vue
+-->
 <template>
   <div class="recommend-page">
     <!-- banner -->
@@ -12,7 +20,7 @@
           <div class="recommend-song-content">
             <song-sheet-com
               v-for="songSheetData in personalizedSongData"
-              :songSheetData="songSheetData" @click="songSheetClickHandle"
+              :songSheetData="songSheetData" @click="songSheetClickHandle(songSheetData)"
             ></song-sheet-com>
           </div>
         </template>
@@ -28,6 +36,8 @@ import { defineComponent } from "vue";
 import { getRecommendBanner, getPersonalizedSong } from "@/api/recommend/index";
 // 组件
 import { CarouselCom, ClassifyShowCom, SongSheetCom } from "@/components/index";
+// audioHooks
+import { useAddAudioListHooks, useChangeAudioIdHooks } from "@/hooks/audioHooks";
 
 export default defineComponent({
   name: "Recommend",
@@ -71,8 +81,14 @@ export default defineComponent({
       });
   },
   methods: {
-    songSheetClickHandle() {
-      
+    // 歌单点击事件
+    songSheetClickHandle(audioData: any) {
+      // 修改 audio id
+      /* useChangeAudioIdHooks(audioData.id);
+      // 添加到 播放列表中
+      useAddAudioListHooks(audioData); */
+      // (this as any).$bus.emit("audioPlay");
+
     }
   }
 });

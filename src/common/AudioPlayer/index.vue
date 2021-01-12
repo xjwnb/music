@@ -1,5 +1,10 @@
 <template>
   <div class="audio-player">
+    <!-- audio -->
+    <audio
+      :src="id ? `https://music.163.com/song/media/outer/url?id=${id}.mp3` : ''"
+    ></audio>
+    <!-- 左侧歌曲信息 -->
     <div v-if="id" class="audio-player-left-info">
       <div class="audio-player-left-info-image">
         <el-image></el-image>
@@ -13,14 +18,25 @@
       <div class="audio-player-center-control-before">
         <span class="iconfont icon-houtui"></span>
       </div>
-      <div class="audio-player-center-control-play">
-        <span v-if="!isplay" class="iconfont icon-icon_play"></span>
-        <span v-else class="iconfont icon-zanting"></span>
+      <!-- 播放暂停 -->
+      <div class="audio-player-center-control-play" @click="audioPlay">
+        <template v-if="!isplay">
+          <div class="audio-player-center-control-play-isPlay">
+            <span class="iconfont icon-icon_play"></span>
+          </div>
+        </template>
+
+        <template v-else>
+          <div class="audio-player-center-control-play-isPause">
+            <span class="iconfont icon-zanting"></span>
+          </div>
+        </template>
       </div>
       <div class="audio-player-center-control-after">
         <span class="iconfont icon-qianjin"></span>
       </div>
     </div>
+    <!-- 右侧控制 -->
     <div class="audio-player-right-edit">EDIT</div>
   </div>
 </template>
@@ -28,14 +44,48 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { mapState } from "vuex";
+import store from "@/store";
+// getter
+import { GET_AUDIO_ID } from "@/store/getter-types";
 
 export default defineComponent({
   name: "AudioPlayer",
   data() {
     return {
-      isplay: false,  // 播放状态
-      id: "",         // 音乐 id
+      isplay: false, // 播放状态
+      id: "167937", // 音乐 id
+      audio: null,
     };
+  },
+  mounted() {
+    store.commit("formatState");
+    let audio = document.getElementsByTagName("audio")[0];
+    (this as any).audio = audio;
+    console.dir(audio);
+    audio.addEventListener("play", () => {});
+    // 触发响应
+    (this as any).$bus.on("audioPlay", () => {
+      let audio_id = store.getters[GET_AUDIO_ID];
+      this.id = (audio_id as number).toString();
+      this.isplay = true;
+      console.log(audio_id);
+      console.log("audioPlay");
+    });
+    console.log(store);
+  },
+  methods: {
+    // 播放 暂停
+    audioPlay() {
+      if (this.audio) {
+        if ((this as any).audio.paused) {
+          (this as any).audio.play();
+          this.isplay = true;
+        } else {
+          (this as any).audio.pause();
+          this.isplay = false;
+        }
+      }
+    },
   },
 });
 </script>

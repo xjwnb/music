@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-11 12:19:56
- * @LastEditTime: 2021-01-11 16:28:25
+ * @LastEditTime: 2021-01-12 17:18:23
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\components\SongSheet\index.vue
@@ -65,7 +65,7 @@ export default defineComponent({
 
     .el-image {
       width: 100%;
-      height: 100%;
+      height: 20em;
       border-radius: 0.7rem;
     }
     .song-sheet-player-icon {
@@ -108,5 +108,8 @@ export default defineComponent({
       overflow: hidden;
     }
   }
+}
+.song-sheet-com:nth-child(-n+5) {
+  margin-bottom: 2rem;
 }
 </style>
