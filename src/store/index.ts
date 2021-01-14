@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-08 16:28:55
- * @LastEditTime: 2021-01-12 21:57:41
+ * @LastEditTime: 2021-01-14 14:38:40
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\store\index.ts
@@ -15,6 +15,8 @@ import { IS_LOGIN, ASIDE_NAV, AUDIO_ID, AUDIO_LIST, USER_INFO, AUDIO_INFO } from
 import { GET_AUDIO_ID } from "./getter-types";
 // const 
 import { asideNavInfo } from "@/const/public/index";
+// audio 接口
+import { AudioInfoInterface } from "@/interface/public/audio";
 
 // useid 1559273326
 
@@ -25,8 +27,8 @@ export default createStore({
     [USER_INFO]: {},                 // 用户信息
     [ASIDE_NAV]: asideNavInfo,     // aside 导航信息
     [AUDIO_ID]: "" as string,                // audio id
-    [AUDIO_INFO]: {},                  // 当前播放歌曲信息
-    [AUDIO_LIST]: [] as any[],              // audio 播放列表
+    [AUDIO_INFO]: {} as AudioInfoInterface,                  // 当前播放歌曲信息
+    [AUDIO_LIST]: [] as AudioInfoInterface[],              // audio 播放列表
   },
   getters: {
     [GET_AUDIO_ID](state) {
@@ -67,7 +69,13 @@ export default createStore({
     // 格式化
     formatState(state) {
       state[AUDIO_ID] = "";
-      state[AUDIO_INFO] = {}
+      state[AUDIO_INFO] = {
+        id: "",
+        songName: "",
+        artistName: "",
+        playTime: 0,
+        picUrl: ""
+      }
       state[AUDIO_LIST] = [];
     }
   },

@@ -19,10 +19,10 @@
       <div class="audio-player-left-info-msg">
         <div class="audio-player-left-info-msg-name">
           <span class="audio-player-left-info-msg-song-name">{{
-            audioInfo.name
+            audioInfo.songName
           }}</span>
           <span class="audio-player-left-info-msg-song-artists-name">
-            {{ audioInfo.song.artists[0].name }}</span
+            {{ audioInfo.artistName }}</span
           >
         </div>
         <div class="audio-player-left-info-msg-time">
@@ -128,8 +128,7 @@ export default defineComponent({
       }
     },
     time(newVal) {
-      let _this = (this as any);
-      console.log(newVal);
+      let _this = this as any;
       _this.nowTimeFormat = numberToTimeFormat(newVal);
     },
     /* totalTimeShowFormat(newVal) {
@@ -162,7 +161,19 @@ export default defineComponent({
       clearInterval(_this.timeInterval);
     });
     // 开始播放事件
-    audio.addEventListener("canplay", () => {
+    /* audio.addEventListener("canplay", () => {
+      console.log("canplay");
+      if (audio.loop) {
+        _this.time = 0;
+      }
+      clearTimeout(_this.playTimeout);
+      clearInterval(_this.timeInterval);
+      _this.timeInterval = setInterval(() => {
+        this.time++;
+      }, 1000);
+    }); */
+    audio.addEventListener("canplaythrough", () => {
+      _this.audio.play();
       console.log("canplay");
       if (audio.loop) {
         _this.time = 0;
@@ -188,11 +199,11 @@ export default defineComponent({
         clearInterval(_this.timeInterval);
         clearTimeout(_this.playTimeout);
         _this.audio.currentTime = 0;
-        _this.audio.play();
+        // _this.audio.play();
         _this.time = 0;
         _this.playTimeout = setTimeout(() => {
           if (_this.audio.paused) {
-            _this.audio.play();
+            // _this.audio.play();
             _this.isplay = true;
             _this.timeInterval = setInterval(() => {
               this.time++;
@@ -208,9 +219,7 @@ export default defineComponent({
       clearTimeout(_this.playTimeout); */
       _this.time = 0;
       // 获取 audio 全部时间
-      let audioTotalTime = (store.state[
-        AUDIO_INFO
-      ] as any).song.bMusic.playTime.toString();
+      let audioTotalTime = (store.state[AUDIO_INFO] as any).playTime.toString();
       let nowAudioTotalTime = Number(
         audioTotalTime.replace(
           audioTotalTime.slice(-3, audioTotalTime.length),

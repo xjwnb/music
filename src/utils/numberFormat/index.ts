@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-11 14:57:00
- * @LastEditTime: 2021-01-13 19:42:51
+ * @LastEditTime: 2021-01-14 14:50:11
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\utils\numberformat\index.ts
@@ -39,6 +39,5 @@ export function numberToTimeFormat(num: number | string): string {
   let minutesStr = "";
   secondsLength <= 1 ? secondsStr = `0${seconds}` : secondsStr = `${seconds}`;
   minutesLength <= 1 ? minutesStr = `0${minutes}` : minutesStr = `${minutes}`;
-  console.log(`${minutesStr} : ${secondsStr}`, num)
   return `${minutesStr} : ${secondsStr}`;
 }

@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-09 22:49:56
- * @LastEditTime: 2021-01-13 21:17:50
+ * @LastEditTime: 2021-01-14 14:49:14
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\Recommend\index.vue
@@ -74,6 +74,8 @@ import {
   AUDIO_INFO_CHANGE,
   AUDIO_LIST_ADD,
 } from "@/store/mutation-types";
+// audio 接口
+import { AudioInfoInterface } from "@/interface/public/audio";
 
 export default defineComponent({
   name: "Recommend",
@@ -144,13 +146,20 @@ export default defineComponent({
     // 最新音乐点击
     latestMusicClickHandle(latestMusic: any) {
       console.log(latestMusic);
-      let { id } = latestMusic;
+      let { id, name, song, picUrl } = latestMusic;
+      let audioInfo: AudioInfoInterface = {
+        id: id,
+        songName: name,
+        artistName: song.artists[0].name,
+        playTime: song.bMusic.playTime,
+        picUrl: picUrl
+      }
       store.commit(AUDIO_ID_CHANGE, { id: id });
       store.commit(AUDIO_INFO_CHANGE, {
-        audioInfo: latestMusic,
+        audioInfo: audioInfo,
       });
       store.commit(AUDIO_LIST_ADD, {
-        audioData: latestMusic,
+        audioData: audioInfo,
       });
       // 触发播放音频
       (this as any).$bus.emit("audioPlay");
