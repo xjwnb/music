@@ -1,0 +1,23 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "11177667",
+      "name": "循环",
+      "font_class": "ziyuan",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
+      "icon_id": "18661860",
+      "name": "顺序",
+      "font_class": "hanhan-01-01",
+      "unicode": "e6af",
+      "unicode_decimal": 59055
+    }
+  ]
+}

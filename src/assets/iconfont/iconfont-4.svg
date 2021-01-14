@@ -1,0 +1,32 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
+<!--
+2013-9-30: Created.
+-->
+<svg>
+<metadata>
+Created by iconfont
+</metadata>
+<defs>
+
+<font id="iconfont" horiz-adv-x="1024" >
+  <font-face
+    font-family="iconfont"
+    font-weight="500"
+    font-stretch="normal"
+    units-per-em="1024"
+    ascent="896"
+    descent="-128"
+  />
+    <missing-glyph />
+    
+    <glyph glyph-name="ziyuan" unicode="&#58903;" d="M448 640h320v-128l192 192-192 192v-128H448A448 448 0 0 1 0 320h128A320 320 0 0 0 448 640zM1024 448a320 320 0 0 0-320-320H384v128l-192-192 192-192v128h320a448 448 0 0 1 448 448z"  horiz-adv-x="1152" />
+
+    
+    <glyph glyph-name="hanhan-01-01" unicode="&#59055;" d="M941 481.4H83c-11 0-20 9-20 20s9 20 20 20h858c11 0 20-9 20-20s-8.9-20-20-20zM937.2 490.6c-5.1 0-10.2 2-14.1 5.9L780.7 638.9c-7.8 7.8-7.8 20.5 0 28.3 7.8 7.8 20.5 7.8 28.3 0l142.4-142.4c7.8-7.8 7.8-20.5 0-28.3-4-3.9-9.1-5.9-14.2-5.9zM941 246.6H83c-11 0-20 9-20 20s9 20 20 20h858c11 0 20-9 20-20s-8.9-20-20-20zM794.8 95c-5.1 0-10.2 2-14.1 5.9-7.8 7.8-7.8 20.5 0 28.3L923 271.5c7.8 7.8 20.5 7.8 28.3 0s7.8-20.5 0-28.3L808.9 100.9c-3.9-3.9-9-5.9-14.1-5.9z"  horiz-adv-x="1024" />
+
+    
+
+
+  </font>
+</defs></svg>

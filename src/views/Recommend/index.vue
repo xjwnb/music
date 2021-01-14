@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-09 22:49:56
- * @LastEditTime: 2021-01-12 19:42:50
+ * @LastEditTime: 2021-01-13 21:17:50
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\Recommend\index.vue
@@ -134,6 +134,7 @@ export default defineComponent({
   methods: {
     // 歌单点击事件
     songSheetClickHandle(audioData: any) {
+      this.$router.push(`/songlists/${audioData.id}`)
       // 修改 audio id
       /* useChangeAudioIdHooks(audioData.id);
       // 添加到 播放列表中

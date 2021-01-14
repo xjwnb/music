@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2021-01-08 16:28:55
+ * @LastEditTime: 2021-01-13 21:15:25
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \music\src\router\index.ts
+ */
 
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Home from '../views/Home.vue'
@@ -19,6 +27,11 @@ const routes: Array<RouteRecordRaw> = [
         path: "",
         name: "Home",
         component: Home
+      },
+      {
+        path: "songlists/:id",
+        name: "Songlists",
+        component: () => import(/* webpackChunkName: "Songlists" */ "@/views/SonglistsDetails/index.vue")
       },
       {
         path: 'about',
