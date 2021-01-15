@@ -160,6 +160,14 @@ export default defineComponent({
       clearTimeout(_this.playTimeout);
       clearInterval(_this.timeInterval);
     });
+    // 数据请求异常失败
+    audio.addEventListener("error", function () {
+      _this.isplay = false;
+      _this.audio.pause();
+      clearTimeout(_this.playTimeout);
+      clearInterval(_this.timeInterval);
+    });
+
     // 开始播放事件
     /* audio.addEventListener("canplay", () => {
       console.log("canplay");
@@ -172,9 +180,10 @@ export default defineComponent({
         this.time++;
       }, 1000);
     }); */
+    // 数据请求完成
     audio.addEventListener("canplaythrough", () => {
       _this.audio.play();
-      console.log("canplay");
+      console.log("canplaythrough");
       if (audio.loop) {
         _this.time = 0;
       }
@@ -191,7 +200,7 @@ export default defineComponent({
     // audio.addEventListener("play", () => {});
     // 触发响应
     _this.$bus.on("audioPlay", () => {
-      console.log(store.state);
+      console.log("store.state", store.state);
       clearInterval(_this.timeInterval);
       clearTimeout(_this.playTimeout);
       let audio_id = store.getters[GET_AUDIO_ID];
@@ -226,7 +235,6 @@ export default defineComponent({
           ""
         )
       );
-      console.log(nowAudioTotalTime);
       _this.totalTime = nowAudioTotalTime;
       // 格式化总时间
       _this.totalTimeFormat = numberToTimeFormat(nowAudioTotalTime);
@@ -243,7 +251,7 @@ export default defineComponent({
       }, 50);
       // });
     });
-    console.log(store);
+    console.log("store", store);
   },
   beforeUnmount() {
     let _this = this as any;
