@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-11 14:57:00
- * @LastEditTime: 2021-01-14 14:50:11
+ * @LastEditTime: 2021-01-16 14:44:57
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\utils\numberformat\index.ts
@@ -24,7 +24,10 @@ export function numberFormat(num: number): string {
 }
 
 
-
+/**
+ * 将毫秒数转换为 分钟 : 秒 的格式。
+ * @param num number | string
+ */
 export function numberToTimeFormat(num: number | string): string {
   let n: number = 0;
   let isString = typeof num === "string" ? true : false;
@@ -40,4 +43,19 @@ export function numberToTimeFormat(num: number | string): string {
   secondsLength <= 1 ? secondsStr = `0${seconds}` : secondsStr = `${seconds}`;
   minutesLength <= 1 ? minutesStr = `0${minutes}` : minutesStr = `${minutes}`;
   return `${minutesStr} : ${secondsStr}`;
+}
+
+
+/**
+ * 1610608721781 -> 2021-1-14
+ * @param num number
+ */
+export function numberToDateFormat(num: number): string {
+  let date = new Date(num);
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let day = date.getDate();
+  let monthLength = month.toString().length;
+  let dayLength = day.toString().length;
+  return `${year} - ${monthLength >= 2 ? month : '0'+ month} - ${ dayLength >= 2 ? day : '0' + day}`;
 }
