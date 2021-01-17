@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-13 21:11:43
- * @LastEditTime: 2021-01-16 18:57:59
+ * @LastEditTime: 2021-01-17 14:21:08
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\SonglistsDetails\index.vue
@@ -60,7 +60,10 @@
       <!-- 标签 -->
       <div class="songlist-detail-content-tabs">
         <div
-          :class="['songlist-detail-content-tab', currentTab === tab.alias ? 'active': '']"
+          :class="[
+            'songlist-detail-content-tab',
+            currentTab === tab.alias ? 'active' : '',
+          ]"
           v-for="tab in tabsInfo"
           :key="tab.id"
           @click="currentTab = tab.alias"
@@ -69,8 +72,30 @@
         </div>
       </div>
       <!-- 内容 -->
-      <div v-show="currentTab==='songlist'" class="songlist-detail-content-songs">歌曲列表</div>
-      <div v-show="currentTab==='comment'" class="songlist-detail-content-comment">评论</div>
+      <div
+        v-show="currentTab === 'songlist'"
+        class="songlist-detail-content-songs"
+      >
+        <el-table
+          :data="songs"
+          stripe
+          style="width: 100%"
+          @row-dblclick="dbTableClickHandle"
+        >
+          <el-table-column prop="num" width="180"> </el-table-column>
+          <el-table-column prop="title" label="音乐标题" width="180">
+          </el-table-column>
+          <el-table-column prop="songer" label="歌手"></el-table-column>
+          <el-table-column prop="album" label="专辑"></el-table-column>
+          <el-table-column prop="playTimeFormat" label="时长"></el-table-column>
+        </el-table>
+      </div>
+      <div
+        v-show="currentTab === 'comment'"
+        class="songlist-detail-content-comment"
+      >
+        评论
+      </div>
     </div>
   </div>
 </template>
@@ -79,7 +104,20 @@
 // 请求
 import { getSongListsById, getSongDetailByIds } from "@/api/songlists";
 // utils
-import { numberFormat, numberToDateFormat } from "@/utils/numberFormat";
+import {
+  numberFormat,
+  numberToDateFormat,
+  numberToTimeFormat,
+} from "@/utils/numberFormat";
+// songlist interface
+import { songlistInterface } from "@/interface/views/songlist";
+// vuex
+import store from "@/store";
+import { AUDIO_ID_CHANGE, AUDIO_LIST_ADD, AUDIO_INFO_CHANGE } from "@/store/mutation-types";
+import { AUDIO_ID, AUDIO_INFO, AUDIO_LIST } from "@/store/state-types";
+// interface
+import { AudioInfoInterface } from "@/interface/public/audio";
+// vue
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -113,6 +151,8 @@ export default defineComponent({
         },
       ],
       currentTab: "songlist", // 当前标签
+      songs: [] as songlistInterface[], // 歌曲数组
+      loading: null,   // 加载
     };
   },
   computed: {
@@ -135,13 +175,23 @@ export default defineComponent({
   },
   mounted() {
     let _this = this as any;
+    // loading
+    console.log("this", this);
+    const loading = _this.$loading({
+      target: document.getElementsByClassName("songlist-detail-content-songs")[0],
+      lock: true,
+      text: "Loading",
+      spinner: "el-icon-loading",
+      background: "rgba(0, 0, 0, 0.7)",
+    });
+    _this.loading = loading;
+
     // params id
     let id = _this.$route.params.id;
     _this.id = id;
     // 请求数据
     getSongListsById(id).then((res) => {
       let data = (res as any).data;
-      console.log(data);
       if (data.code === 200) {
         let {
           coverImgUrl,
@@ -164,21 +214,60 @@ export default defineComponent({
         _this.tags = tags;
         _this.trackCount = trackCount;
         _this.trackIds = trackIds;
+        // 歌曲 id 数组
         let idsArr: any[] = [];
         trackIds.forEach((id: any) => {
           (Array as any).prototype.push.call(idsArr, id.id);
         });
         // 通过 id 获取歌曲信息
         getSongDetailByIds(idsArr.join(",")).then((res) => {
-          console.log(res);
+          if ((res as any).status === 200) {
+            let songsData = (res as any).data.songs;
+            let songs: songlistInterface[] = songsData.map(
+              (song: any, index: number) => {
+                return {
+                  num:
+                    (index + 1).toString().length >= 2
+                      ? (index + 1).toString()
+                      : `0${index + 1}`,
+                  id: song.id,
+                  title: song.name,
+                  picUrl: song.al.picUrl,
+                  songer: song.ar[0].name,
+                  album: song.al.name,
+                  playTimeFormat: numberToTimeFormat(song.dt / 1000),
+                  playTime: song.dt
+                };
+              }
+            );
+            _this.songs = songs;
+            _this.loading.close(); 
+          }
         });
       }
     });
   },
   methods: {
+    // 展开歌单简介
     foldChange() {
       let _this = this as any;
       _this.isFoldDescription = !_this.isFoldDescription;
+    },
+    // 表单行双击事件（播放）
+    dbTableClickHandle(rowData: any): void {
+      let { id, picUrl, songer, title, playTime } = rowData;
+      let audioData: AudioInfoInterface;
+      audioData = {
+        id,
+        songName: title,
+        artistName: songer,
+        playTime,
+        picUrl
+      }
+      store.commit(AUDIO_ID_CHANGE, { id });
+      store.commit(AUDIO_INFO_CHANGE, { audioInfo: audioData });
+      store.commit(AUDIO_LIST_ADD, { audioData });
+      (this as any).$bus.emit("audioPlay");
     },
   },
 });

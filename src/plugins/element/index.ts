@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-08 18:39:20
- * @LastEditTime: 2021-01-16 15:21:17
+ * @LastEditTime: 2021-01-17 12:01:09
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\plugins\element\index.ts
@@ -57,7 +57,7 @@ const components = [
 
 const plugins = [
   ElLoading,
-  ElMessage
+  ElMessage,
 ];
 
 
@@ -69,4 +69,5 @@ export function getEle(app: any) {
   plugins.forEach(plugin => {
     app.use(plugin)
   })
+  app.config.globalProperties.$loading = ElLoading.service;
 }

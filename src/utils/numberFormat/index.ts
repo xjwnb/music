@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-11 14:57:00
- * @LastEditTime: 2021-01-16 14:44:57
+ * @LastEditTime: 2021-01-17 10:50:22
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\utils\numberformat\index.ts
@@ -33,7 +33,7 @@ export function numberToTimeFormat(num: number | string): string {
   let isString = typeof num === "string" ? true : false;
   isString && (n = Number(num));
   (n as any )= num;
-  let seconds: number =  (n as number) % 60;
+  let seconds: number =  Math.floor((n as number) % 60);
   let minutes: number =  Math.floor((n as number) / 60);
   
   let secondsLength = (seconds as number).toString().length;

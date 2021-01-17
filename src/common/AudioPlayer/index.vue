@@ -93,7 +93,7 @@ import store from "@/store";
 // getter
 import { GET_AUDIO_ID } from "@/store/getter-types";
 // state
-import { AUDIO_INFO } from "@/store/state-types";
+import { AUDIO_INFO, AUDIO_LIST } from "@/store/state-types";
 // number format utils
 import { numberToTimeFormat } from "@/utils/numberFormat/index";
 
@@ -159,6 +159,24 @@ export default defineComponent({
       _this.time = 0;
       clearTimeout(_this.playTimeout);
       clearInterval(_this.timeInterval);
+      // 如果不是单曲循环，则播放下一首歌曲
+      if (!_this.isloop) {
+        let audio_list = store.state[AUDIO_LIST];
+        let nowAudioIndex = audio_list.findIndex(
+          (audio) => audio.id === _this.id
+        );
+        if (audio_list[nowAudioIndex + 2]) {
+          console.log(audio_list[nowAudioIndex + 2]);
+          _this.id = audio_list[nowAudioIndex + 2].id;
+          _this.audioInfo = audio_list[nowAudioIndex + 2];
+          _this.audio.play();
+          _this.isplay = true;
+          _this.time = 0;
+          _this.timeInterval = setInterval(() => {
+            _this.time++;
+          }, 1000);
+        }
+      }
     });
     // 数据请求异常失败
     audio.addEventListener("error", function () {
@@ -200,7 +218,7 @@ export default defineComponent({
     // audio.addEventListener("play", () => {});
     // 触发响应
     _this.$bus.on("audioPlay", () => {
-      console.log("store.state", store.state);
+      console.log("store.state[AUDIO_LIST]", store.state[AUDIO_LIST]);
       clearInterval(_this.timeInterval);
       clearTimeout(_this.playTimeout);
       let audio_id = store.getters[GET_AUDIO_ID];
@@ -251,7 +269,7 @@ export default defineComponent({
       }, 50);
       // });
     });
-    console.log("store", store);
+    // console.log("store state AUDIO_INFO", store.state[AUDIO_INFO]);
   },
   beforeUnmount() {
     let _this = this as any;
