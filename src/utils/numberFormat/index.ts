@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-11 14:57:00
- * @LastEditTime: 2021-01-17 10:50:22
+ * @LastEditTime: 2021-01-17 20:38:57
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\utils\numberformat\index.ts
@@ -32,10 +32,10 @@ export function numberToTimeFormat(num: number | string): string {
   let n: number = 0;
   let isString = typeof num === "string" ? true : false;
   isString && (n = Number(num));
-  (n as any )= num;
-  let seconds: number =  Math.floor((n as number) % 60);
-  let minutes: number =  Math.floor((n as number) / 60);
-  
+  (n as any) = num;
+  let seconds: number = Math.floor((n as number) % 60);
+  let minutes: number = Math.floor((n as number) / 60);
+
   let secondsLength = (seconds as number).toString().length;
   let minutesLength = (minutes as number).toString().length;
   let secondsStr = "";
@@ -57,5 +57,49 @@ export function numberToDateFormat(num: number): string {
   let day = date.getDate();
   let monthLength = month.toString().length;
   let dayLength = day.toString().length;
-  return `${year} - ${monthLength >= 2 ? month : '0'+ month} - ${ dayLength >= 2 ? day : '0' + day}`;
+  return `${year} - ${monthLength >= 2 ? month : '0' + month} - ${dayLength >= 2 ? day : '0' + day}`;
 }
+
+export function numberToTimeDistanceFormat(num: number): string {
+  let nowTimeData: any;
+  let timeDate: any;
+  let now = new Date();
+  nowTimeData = {
+    year: now.getFullYear(),
+    month: now.getMonth() + 1,
+    date: now.getDate(),
+    hour: now.getHours(),
+    minutes: now.getMinutes()
+  }
+
+  let time = new Date(num);
+  timeDate = {
+    year: time.getFullYear(),
+    month: time.getMonth() + 1,
+    date: time.getDate(),
+    hour: time.getHours(),
+    minutes: time.getMinutes()
+  }
+  let timeDateHourLength = timeDate.hour.toString().length;
+  let timeDateMinutesLength = timeDate.minutes.toString().length;
+  let timeDateMonthLength = timeDate.month.toString().length;
+  let timeDateDateLength = timeDate.date.toString().length;
+  if (nowTimeData.year !== timeDate.year || nowTimeData.month !== timeDate.month || nowTimeData.date !== timeDate.date) {
+    return `${timeDate.year}-${timeDateMonthLength < 2 ? `0${timeDate.month}` : `${timeDate.month}`}-${timeDateDateLength < 2 ? `0${timeDate.date}` : `${timeDate.date}`}  ${timeDateHourLength < 2 ? `0${timeDate.hour}` : `${timeDate.hour}`} : ${timeDateMinutesLength < 2 ? `0${timeDate.minutes}` : `${timeDate.minutes}`}`;
+  } else {
+    if (nowTimeData.hour === timeDate.hour) {
+      return `${Math.ceil(nowTimeData.minutes - timeDate.minutes)} 分钟前`;
+    } else {
+      if (nowTimeData.hour - timeDate.hour == 1) {
+        let result: string;
+        let minute = timeDate.minutes + (60 - nowTimeData.minutes);
+        minute < 60 ? result = `${minute} 分钟前` : result = `${timeDateHourLength < 2 ? `0${timeDate.hour}` : timeDate.hour} : ${timeDateMinutesLength < 2 ? `0${timeDate.minutes}` : timeDate.minutes}`;
+        return result;
+      } else {
+        return `${timeDateHourLength < 2 ? `0${timeDate.hour}` : `${timeDate.hour}`} : ${timeDateMinutesLength < 2 ? `0${timeDate.minutes}` : `${timeDate.minutes}`}`;
+      }
+    }
+  }
+}
+
+

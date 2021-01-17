@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-13 21:11:43
- * @LastEditTime: 2021-01-17 14:21:08
+ * @LastEditTime: 2021-01-17 22:12:12
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\SonglistsDetails\index.vue
@@ -66,9 +66,9 @@
           ]"
           v-for="tab in tabsInfo"
           :key="tab.id"
-          @click="currentTab = tab.alias"
+          @click="tabChangeHandle(tab.alias)"
         >
-          {{ tab.tab }}
+          {{ tab.tab }}{{ tab.alias === "comment" ? commentCount : "" }}
         </div>
       </div>
       <!-- 内容 -->
@@ -95,6 +95,41 @@
         class="songlist-detail-content-comment"
       >
         评论
+        <!-- 内容 -->
+        <div class="songlist-detail-content-comment-list-content">
+          <div
+            v-for="commentData in currentCommentArray"
+            class="songlist-detail-content-comment-content"
+          >
+            <div class="songlist-detail-content-comment-content-user-avatarUrl">
+              <el-avatar :src="commentData.picUrl"></el-avatar>
+            </div>
+            <div class="songlist-detail-content-comment-content-detail">
+              <div
+                class="songlist-detail-content-comment-content-detail-content"
+              >
+                <span class="nickName-span">{{ commentData.nickName }}：</span>
+                <span class="content-span">{{ commentData.content }}</span>
+              </div>
+              <div class="songlist-detail-content-comment-content-detail-time">
+                <span class="time-span">{{
+                  commentTimeFormat(commentData.time)
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 分页 -->
+        <el-pagination
+          v-model:currentPage="currentPage"
+          background
+          layout="prev, pager, next"
+          :total="commentCount"
+          :page-size="20"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        >
+        </el-pagination>
       </div>
     </div>
   </div>
@@ -102,21 +137,33 @@
 
 <script lang="ts">
 // 请求
-import { getSongListsById, getSongDetailByIds } from "@/api/songlists";
+import {
+  getSongListsById,
+  getSongDetailByIds,
+  getPlaylistCommentById,
+} from "@/api/songlists";
 // utils
 import {
   numberFormat,
   numberToDateFormat,
   numberToTimeFormat,
+  numberToTimeDistanceFormat,
 } from "@/utils/numberFormat";
-// songlist interface
-import { songlistInterface } from "@/interface/views/songlist";
 // vuex
 import store from "@/store";
-import { AUDIO_ID_CHANGE, AUDIO_LIST_ADD, AUDIO_INFO_CHANGE } from "@/store/mutation-types";
+import {
+  AUDIO_ID_CHANGE,
+  AUDIO_LIST_ADD,
+  AUDIO_INFO_CHANGE,
+} from "@/store/mutation-types";
 import { AUDIO_ID, AUDIO_INFO, AUDIO_LIST } from "@/store/state-types";
 // interface
 import { AudioInfoInterface } from "@/interface/public/audio";
+// songlist interface
+import {
+  songlistInterface,
+  songlistCommentInterface,
+} from "@/interface/views/songlist";
 // vue
 import { defineComponent } from "vue";
 
@@ -152,7 +199,11 @@ export default defineComponent({
       ],
       currentTab: "songlist", // 当前标签
       songs: [] as songlistInterface[], // 歌曲数组
-      loading: null,   // 加载
+      loading: null, // 加载
+      commentCount: 0, // 评论数量
+      currentPage: 1, // 当前页
+      commentArray: [], // 评论数组
+      currentCommentArray: [], // 当前页的评论
     };
   },
   computed: {
@@ -178,7 +229,9 @@ export default defineComponent({
     // loading
     console.log("this", this);
     const loading = _this.$loading({
-      target: document.getElementsByClassName("songlist-detail-content-songs")[0],
+      target: document.getElementsByClassName(
+        "songlist-detail-content-songs"
+      )[0],
       lock: true,
       text: "Loading",
       spinner: "el-icon-loading",
@@ -193,6 +246,7 @@ export default defineComponent({
     getSongListsById(id).then((res) => {
       let data = (res as any).data;
       if (data.code === 200) {
+        console.log(data);
         let {
           coverImgUrl,
           createTime,
@@ -203,6 +257,7 @@ export default defineComponent({
           trackCount,
           trackIds,
           creator,
+          commentCount,
         } = data.playlist;
         _this.nickname = creator.nickname;
         _this.avatarUrl = creator.avatarUrl;
@@ -214,6 +269,7 @@ export default defineComponent({
         _this.tags = tags;
         _this.trackCount = trackCount;
         _this.trackIds = trackIds;
+        _this.commentCount = commentCount;
         // 歌曲 id 数组
         let idsArr: any[] = [];
         trackIds.forEach((id: any) => {
@@ -236,12 +292,12 @@ export default defineComponent({
                   songer: song.ar[0].name,
                   album: song.al.name,
                   playTimeFormat: numberToTimeFormat(song.dt / 1000),
-                  playTime: song.dt
+                  playTime: song.dt,
                 };
               }
             );
             _this.songs = songs;
-            _this.loading.close(); 
+            _this.loading.close();
           }
         });
       }
@@ -262,12 +318,107 @@ export default defineComponent({
         songName: title,
         artistName: songer,
         playTime,
-        picUrl
-      }
+        picUrl,
+      };
       store.commit(AUDIO_ID_CHANGE, { id });
       store.commit(AUDIO_INFO_CHANGE, { audioInfo: audioData });
       store.commit(AUDIO_LIST_ADD, { audioData });
       (this as any).$bus.emit("audioPlay");
+    },
+    // 切换标签事件
+    tabChangeHandle(tabAlias: string) {
+      let _this = this as any;
+      _this.currentTab = tabAlias;
+      let loading = _this.$loading({
+        target: document.getElementsByClassName(
+          "songlist-detail-content-comment-list-content"
+        )[0],
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      if (!_this.currentCommentArray[0]) {
+        getPlaylistCommentById(_this.id, 0).then((res) => {
+          let commentArr: songlistCommentInterface[];
+          let data = (res as any).data;
+          let commentData: [] = data.comments;
+          commentArr = commentData.map((comment: any, index: any) => {
+            let commentInfo = {
+              nickName: comment.user.nickname,
+              picUrl: comment.user.avatarUrl,
+              content: comment.content,
+              likedCount: comment.likedCount,
+              replied: comment.beReplied,
+              time: comment.time,
+            };
+            _this.commentArray[index] = commentInfo;
+            return commentInfo;
+          });
+          _this.currentCommentArray = commentArr;
+          loading.close();
+          // _this.commentArray.push(commentArr);
+        });
+      }
+      loading.close();
+    },
+    // 评论分页事件
+    handleSizeChange(val: number) {
+      console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val: number) {
+      let _this = this as any;
+      let loading = _this.$loading({
+        target: document.getElementsByClassName(
+          "songlist-detail-content-comment-list-content"
+        )[0],
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      _this.currentPage = val;
+      if (_this.commentArray[(val - 1) * 20] === undefined) {
+        getPlaylistCommentById(_this.id, val - 1).then((res) => {
+          let commentArr: songlistCommentInterface[];
+          let data = (res as any).data;
+          let commentData: [] = data.comments;
+          commentArr = commentData.map((comment: any, index: number) => {
+            let commentInfo = {
+              nickName: comment.user.nickname,
+              picUrl: comment.user.avatarUrl,
+              content: comment.content,
+              likedCount: comment.likedCount,
+              replied: comment.beReplied,
+              time: comment.time,
+            };
+            _this.commentArray[(val - 1) * 20 + index] = commentInfo;
+            return commentInfo;
+          });
+          _this.currentCommentArray = commentArr;
+          loading.close();
+          // _this.commentArray.push(commentArr);
+        });
+      } else {
+        let currentPageNum = _this.commentCount - (val - 1) * 20;
+        _this.currentCommentArray = [];
+        if (currentPageNum > 20) {
+          for (let i = 0, l = 20; i < l; i++) {
+            _this.currentCommentArray[i] =
+              _this.commentArray[(val - 1) * 20 + i];
+          }
+        } else {
+          for (let ii = 0, ll = currentPageNum; ii < ll; ii++) {
+            _this.currentCommentArray[ii] =
+              _this.commentArray[(val - 1) * 20 + ii];
+          }
+        }
+        loading.close();
+      }
+    },
+    // 格式化 评论时间
+    commentTimeFormat(time: number) {
+      return numberToTimeDistanceFormat(time);
     },
   },
 });
@@ -365,6 +516,32 @@ export default defineComponent({
       }
       .active {
         border-bottom: 2px solid #e22d2d;
+      }
+    }
+    // 评论内容
+    .songlist-detail-content-comment {
+      .songlist-detail-content-comment-list-content {
+        .songlist-detail-content-comment-content {
+          display: flex;
+          padding: 1rem 0;
+          border-bottom: 1px solid #c9c9c9;
+          .songlist-detail-content-comment-content-user-avatarUrl {
+            margin-right: 1rem;
+          }
+          .songlist-detail-content-comment-content-detail {
+            .songlist-detail-content-comment-content-detail-content {
+              span {
+                font-size: 0.8rem;
+              }
+            }
+            .songlist-detail-content-comment-content-detail-time {
+              .time-span {
+                font-size: 0.7rem;
+                color: #9e9e9e;
+              }
+            }
+          }
+        }
       }
     }
   }

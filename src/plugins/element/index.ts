@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-08 18:39:20
- * @LastEditTime: 2021-01-17 12:01:09
+ * @LastEditTime: 2021-01-17 17:17:07
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\plugins\element\index.ts
@@ -27,6 +27,8 @@ import {
   ElSlider,
   ElTable,
   ElTableColumn,
+  ElPagination,
+  ElAvatar,
 
   // 插件
   ElLoading,
@@ -53,6 +55,8 @@ const components = [
   ElSlider,
   ElTable,
   ElTableColumn,
+  ElPagination,
+  ElAvatar,
 ];
 
 const plugins = [
