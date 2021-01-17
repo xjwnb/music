@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-11 14:57:00
- * @LastEditTime: 2021-01-17 20:38:57
+ * @LastEditTime: 2021-01-17 22:22:31
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\utils\numberformat\index.ts
@@ -60,6 +60,11 @@ export function numberToDateFormat(num: number): string {
   return `${year} - ${monthLength >= 2 ? month : '0' + month} - ${dayLength >= 2 ? day : '0' + day}`;
 }
 
+
+/**
+ * 将毫秒数和当前时间进行比较，如果小于60分钟，则显示为 N 分钟前；当天则转换为 hour:minutes；否则更早时间则转换为 year-month-day
+ * @param num number 时间毫秒数
+ */
 export function numberToTimeDistanceFormat(num: number): string {
   let nowTimeData: any;
   let timeDate: any;
@@ -85,7 +90,7 @@ export function numberToTimeDistanceFormat(num: number): string {
   let timeDateMonthLength = timeDate.month.toString().length;
   let timeDateDateLength = timeDate.date.toString().length;
   if (nowTimeData.year !== timeDate.year || nowTimeData.month !== timeDate.month || nowTimeData.date !== timeDate.date) {
-    return `${timeDate.year}-${timeDateMonthLength < 2 ? `0${timeDate.month}` : `${timeDate.month}`}-${timeDateDateLength < 2 ? `0${timeDate.date}` : `${timeDate.date}`}  ${timeDateHourLength < 2 ? `0${timeDate.hour}` : `${timeDate.hour}`} : ${timeDateMinutesLength < 2 ? `0${timeDate.minutes}` : `${timeDate.minutes}`}`;
+    return `${timeDate.year} - ${timeDateMonthLength < 2 ? `0${timeDate.month}` : `${timeDate.month}`} - ${timeDateDateLength < 2 ? `0${timeDate.date}` : `${timeDate.date}`} —— ${timeDateHourLength < 2 ? `0${timeDate.hour}` : `${timeDate.hour}`} : ${timeDateMinutesLength < 2 ? `0${timeDate.minutes}` : `${timeDate.minutes}`}`;
   } else {
     if (nowTimeData.hour === timeDate.hour) {
       return `${Math.ceil(nowTimeData.minutes - timeDate.minutes)} 分钟前`;

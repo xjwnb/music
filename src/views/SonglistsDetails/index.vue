@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-13 21:11:43
- * @LastEditTime: 2021-01-17 22:12:12
+ * @LastEditTime: 2021-01-17 22:34:19
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\SonglistsDetails\index.vue
@@ -94,7 +94,7 @@
         v-show="currentTab === 'comment'"
         class="songlist-detail-content-comment"
       >
-        评论
+        最新评论（{{ commentCount }}）
         <!-- 内容 -->
         <div class="songlist-detail-content-comment-list-content">
           <div
@@ -506,6 +506,7 @@ export default defineComponent({
   .songlist-detail-content {
     .songlist-detail-content-tabs {
       display: flex;
+      margin: 2rem 0;
       .songlist-detail-content-tab {
         padding: 0.7rem 1rem;
         cursor: pointer;
