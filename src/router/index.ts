@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-08 16:28:55
- * @LastEditTime: 2021-01-13 21:15:25
+ * @LastEditTime: 2021-01-18 15:59:11
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\router\index.ts
@@ -87,6 +87,11 @@ const routes: Array<RouteRecordRaw> = [
         path: "recommend",
         name: "Recommend",
         component: () => import(/* webpackChunkName: "Recommend" */ "@/views/Recommend/index.vue")
+      },
+      {
+        path: "songSheet",
+        name: "SongSheet",
+        component: () => import(/* webpackChunkName: "SongSheet"*/ "@/views/SongSheet/index.vue")
       }
     ]
   }
