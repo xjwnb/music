@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-18 12:51:25
- * @LastEditTime: 2021-01-18 15:50:01
+ * @LastEditTime: 2021-01-19 11:24:06
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\api\topPlaylist\index.ts
@@ -16,7 +16,7 @@ export function getTopPlaylist(pageNum: number, tag: string = '全部') {
 }
 
 
-// 歌曲分类
+// hot 歌曲分类
 export function getPlaylistHot() {
   return request({
     url: `/playlist/hot`
@@ -27,5 +27,12 @@ export function getPlaylistHot() {
 export function getPlaylistHighquality(tag: string = '全部') {
   return request({
     url: `/top/playlist/highquality?limit=1&cat=${tag}`
+  })
+}
+
+// all 歌曲分类
+export function getPlaylistCatlist() {
+  return request({
+    url: `/playlist/catlist`
   })
 }

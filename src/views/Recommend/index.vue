@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-09 22:49:56
- * @LastEditTime: 2021-01-14 14:49:14
+ * @LastEditTime: 2021-01-18 23:21:14
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\Recommend\index.vue
@@ -15,7 +15,11 @@
     <!-- 推荐歌单 -->
     <div class="recommend-song-sheet">
       <classify-show-com>
-        <template v-slot:title> 推荐歌单 </template>
+        <template v-slot:title>
+          <div class="recommend-song-sheet-title" @click="clickTitleHandle">
+            推荐歌单
+          </div>
+        </template>
         <template v-slot:content>
           <div class="recommend-song-content">
             <song-sheet-com
@@ -164,6 +168,10 @@ export default defineComponent({
       // 触发播放音频
       (this as any).$bus.emit("audioPlay");
     },
+    // 点击推荐歌单title事件
+    clickTitleHandle() {
+      this.$router.push("/discover/songSheet");
+    }
   },
 });
 </script>
@@ -178,6 +186,13 @@ export default defineComponent({
   }
   .recommend-song-sheet {
     margin-bottom: 7rem;
+    .recommend-song-sheet-title {
+      cursor: pointer;
+      color: #707070;
+      &:hover {
+        color: #525252;
+      }
+    }
     .recommend-song-content {
       height: 34rem;
       display: flex;
