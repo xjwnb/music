@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-18 15:52:02
- * @LastEditTime: 2021-01-19 13:30:51
+ * @LastEditTime: 2021-01-19 15:03:38
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\TopPlaylist\index.vue
@@ -32,9 +32,15 @@
       <div class="top-playlist-tags-div-btn">
         <el-popover placement="right" :width="400" trigger="click">
           <template #reference>
-            <el-button>click 激活</el-button>
+            <div class="top-playlist-tags-btn">{{ currentTag }}</div>
           </template>
           <div class="top-playlist-tags-content">
+            <div
+              class="top-playlist-tags-title-content-div"
+              @click="tagChangeClickHandle('全部')"
+            >
+              全部歌单
+            </div>
             <div v-for="(tag, key) in tagTitleObj" class="top-playlist-tags">
               <div class="top-playlist-tags-title">
                 <span>{{ key }}</span>
@@ -42,7 +48,11 @@
               <div class="top-playlist-tags-title-content">
                 <div
                   v-for="tagVal in tag"
-                  class="top-playlist-tags-title-content-div"
+                  :key="tagVal.name"
+                  :class="[
+                    'top-playlist-tags-title-content-div',
+                    currentTag === tagVal.name ? 'active' : '',
+                  ]"
                   @click="tagChangeClickHandle(tagVal.name)"
                 >
                   {{ tagVal.name }}
@@ -371,6 +381,20 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
     margin: 2rem 0;
+    .top-playlist-tags-div-btn {
+      .top-playlist-tags-btn {
+        padding: 0.5rem 1.2rem;
+        border-radius: 3rem;
+        border: 1px solid #8a8a8a;
+        color: #8a8a8a;
+        cursor: pointer;
+        &:hover {
+          background-color: #ffaaaa;
+          border-color: #ffaaaa;
+          color: #ffffff;
+        }
+      }
+    }
 
     .top-playlist-tags-div-tags {
       display: flex;
@@ -406,6 +430,18 @@ export default defineComponent({
 // all tag
 .top-playlist-tags-content {
   padding: 1rem;
+  .top-playlist-tags-title-content-div {
+    padding: 0.5rem;
+    margin: 0.3rem;
+    font-size: 0.7rem;
+    color: #8b8b8b;
+    transition: all 0.5s;
+    cursor: default;
+
+    &:hover {
+      color: #575757;
+    }
+  }
   .top-playlist-tags {
     margin-bottom: 1rem;
     display: flex;
