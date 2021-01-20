@@ -83,9 +83,9 @@ export default defineComponent({
                 message: "登录成功！",
                 type: "success",
               });
-              let userAccount = (result as any).account;
+              let userAccount = (result as any);
               console.log("account:", (result as any).account);
-              store.commit(USER_INFO_SET, userAccount);
+              store.commit(USER_INFO_SET, { account: userAccount });
               // vuex 修改登录状态
               store.commit(LOGIN_HANDLE);
               this.$router.push("/");

@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-08 16:28:55
- * @LastEditTime: 2021-01-18 15:59:11
+ * @LastEditTime: 2021-01-20 15:26:54
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\router\index.ts
@@ -71,7 +71,7 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
-    path: "/discover",
+    path: "/discover",  // 发现音乐
     name: "Discover",
     component: MainLayout,
     // component: () => import(/* webpackChunkName: "video" */ "@/views/Video/index.vue")
@@ -84,14 +84,22 @@ const routes: Array<RouteRecordRaw> = [
         
       },
       {
-        path: "recommend",
+        path: "recommend",  // 推荐
         name: "Recommend",
-        component: () => import(/* webpackChunkName: "Recommend" */ "@/views/Recommend/index.vue")
+        component: () => import(/* webpackChunkName: "Recommend" */ "@/views/Recommend/index.vue"),
+        meta: { keepAlive: true }
       },
       {
-        path: "songSheet",
+        path: "songSheet", // 歌单
         name: "SongSheet",
-        component: () => import(/* webpackChunkName: "SongSheet"*/ "@/views/SongSheet/index.vue")
+        component: () => import(/* webpackChunkName: "SongSheet"*/ "@/views/SongSheet/index.vue"),
+        meta: { keepAlive: true }
+      },
+      {
+        path: "rankingList", // 排行榜
+        name: "RankingList",
+        component: () => import(/* webpackChunkName: "RankingList" */ "@/views/RankingList/index.vue"),
+        meta: { keepAlive: true }
       }
     ]
   }

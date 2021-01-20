@@ -1,14 +1,14 @@
 /*
  * @Author: your name
  * @Date: 2021-01-08 16:28:55
- * @LastEditTime: 2021-01-14 14:38:40
+ * @LastEditTime: 2021-01-19 19:11:46
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\store\index.ts
  */
 import { createStore } from 'vuex';
 // mutation 函数名
-import { LOGIN_HANDLE, AUDIO_ID_CHANGE, AUDIO_LIST_ADD, USER_INFO_SET, AUDIO_INFO_CHANGE } from "./mutation-types";
+import { LOGIN_HANDLE, LOGOUT_HANDLE, AUDIO_ID_CHANGE, AUDIO_LIST_ADD, USER_INFO_SET, AUDIO_INFO_CHANGE } from "./mutation-types";
 // state 属性名
 import { IS_LOGIN, ASIDE_NAV, AUDIO_ID, AUDIO_LIST, USER_INFO, AUDIO_INFO } from "./state-types";
 // getter 
@@ -39,6 +39,10 @@ export default createStore({
     // 登录
     [LOGIN_HANDLE](state) {
       state[IS_LOGIN] = true;
+    },
+    // 退出登录
+    [LOGOUT_HANDLE](state) {
+      state[IS_LOGIN] = false;
     },
     // 设置用户信息
     [USER_INFO_SET](state, payload) {

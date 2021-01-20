@@ -143,7 +143,7 @@ export default defineComponent({
     } */
   },
   mounted() {
-    store.commit("formatState");
+    // store.commit("formatState");
     let _this = this as any;
     let audio = document.getElementsByTagName("audio")[0];
     // 设置是否循环

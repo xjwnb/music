@@ -15,6 +15,7 @@
           </div>
         </div>
         <div class="header-right">
+          <!-- 导航 -->
           <div class="header-right-nav-children" v-if="navChildren">
             <el-menu
               :default-active="navChildrenDefaultActive"
@@ -31,6 +32,32 @@
                 ><span>{{ nav.text }}</span></el-menu-item
               >
             </el-menu>
+          </div>
+          <!-- 用户 -->
+          <div class="header-right-user-div">
+            <div
+              v-if="!isLogin"
+              @click="loginHandle"
+              class="header-right-user-login"
+            >
+              登录
+            </div>
+            <div v-else class="header-right-user-info">
+              <el-popover placement="bottom" :width="100" trigger="click">
+                <template #reference>
+                  <div class="header-right-user-info-content">
+                    <el-avatar :src="userInfo.profile.avatarUrl"></el-avatar>
+                    <span>{{ userInfo.profile.nickname }}</span>
+                  </div>
+                </template>
+                <div
+                  @click="logoutHandle"
+                  class="header-right-user-info-logout"
+                >
+                  退出登录
+                </div>
+              </el-popover>
+            </div>
           </div>
         </div>
       </el-header>
@@ -56,10 +83,14 @@
         <!-- 主要内容 -->
         <el-main>
           <!-- <router-view>
-            <keep-alive></keep-alive>
+            
           </router-view> -->
           <div class="main-content">
-            <router-view />
+            <router-view></router-view>
+            <!-- <keep-alive>
+              <router-view v-if="$route.meta.keepAlive" ></router-view>
+            </keep-alive>
+            <router-view v-if="!$route.meta.keepAlive || false" ></router-view> -->
           </div>
         </el-main>
       </el-container>
@@ -73,22 +104,37 @@
 
 
 <script lang="ts">
-import { defineComponent, watch } from "vue";
+import { defineComponent, reactive, ref, watch } from "vue";
 // vuex
+import store from "@/store";
 import { mapState } from "vuex";
-import { ASIDE_NAV } from "@/store/state-types";
+import {
+  LOGOUT_HANDLE,
+  LOGIN_HANDLE,
+  USER_INFO_SET,
+} from "@/store/mutation-types";
+import { ASIDE_NAV, IS_LOGIN, USER_INFO } from "@/store/state-types";
+// 请求
+import { getLoginStatus, logout } from "@/api/login";
 // 播放器
 import AudioPlayer from "@/common/AudioPlayer/index.vue";
+import { ElMessage } from "element-plus";
 
 export default defineComponent({
   name: "MainLayout",
   components: {
-    AudioPlayer
+    AudioPlayer,
   },
-  setup(props, { attrs, slots, emit }) {},
+  setup(props, { attrs, slots, emit }) {
+    let isLogin = ref(false);
+    let userInfo = reactive({});
+    return {};
+  },
   data() {
     return {
       navChildren: null, // 子导航内容
+      isLogin: false, // 是否登录
+      userInfo: {}, // 用户信息
     };
   },
   computed: {
@@ -112,6 +158,7 @@ export default defineComponent({
     },
   },
   mounted() {
+    let _this = this as any;
     let nowPath = this.$route.path;
     // 正则判断 path
     let path = this.formatPath(nowPath);
@@ -119,6 +166,30 @@ export default defineComponent({
     if (asideNav) {
       this.navChildren = asideNav.children;
     }
+    // store
+
+    // 判断登录
+    getLoginStatus().then((res) => {
+      let data = (res as any).data.data;
+      console.log("getLoginStatus", data.code);
+      if (data.code === 200) {
+        console.log("getLoginStatus", data);
+        if (!data.account && !data.profile) {
+          store.commit(LOGOUT_HANDLE);
+          console.log(store.state.IS_LOGIN);
+
+          // router.push("/login");
+        } else {
+          store.commit(LOGIN_HANDLE);
+          store.commit(USER_INFO_SET, { account: data });
+          console.log(store.state.IS_LOGIN);
+          // router.push("/");
+          // 用户信息
+          _this.userInfo = store.state[USER_INFO];
+          _this.isLogin = store.state[IS_LOGIN];
+        }
+      }
+    });
   },
   methods: {
     // header history go
@@ -126,10 +197,10 @@ export default defineComponent({
       let _this = this;
       switch (direction) {
         case "left":
-          _this.$router.go(1);
+          _this.$router.go(-1);
           break;
         case "right":
-          _this.$router.go(-1);
+          _this.$router.go(1);
           break;
       }
     },
@@ -149,6 +220,24 @@ export default defineComponent({
         return (path as any).match(pathReg)[0];
       }
       return "";
+    },
+    // 登录按钮
+    loginHandle() {
+      this.$router.push("/login");
+    },
+    // 退出登录
+    logoutHandle() {
+      logout().then((res) => {
+        let data = (res as any).data;
+        if (data.code === 200) {
+          ElMessage.success({
+            message: "退出登录成功！",
+            type: "success",
+          });
+          this.isLogin = false;
+          console.log("logout  store.state", store.state);
+        }
+      });
     },
   },
 });
@@ -213,19 +302,51 @@ export default defineComponent({
         }
       }
       .header-right {
+        display: flex;
+        align-items: center;
         position: absolute;
         top: 0;
         left: 12rem;
         right: 0;
         height: 100%;
         background-color: #fff;
-        .el-menu {
-          height: 3rem !important;
-          .el-menu-item {
+        .header-right-nav-children {
+          /deep/ .el-menu {
             height: 3rem !important;
+            width: 430px !important;
+            .el-menu-item {
+              height: 3rem !important;
+            }
+          }
+          /deep/ .el-menu.el-menu--horizontal {
+            border-bottom: 0;
+          }
+        }
+        .header-right-user-div {
+          display: inline-block;
+          .header-right-user-login {
+            cursor: pointer;
+            color: #8a8a8a;
+            font-size: 0.9rem;
+            &:hover {
+              color: #535353;
+            }
+          }
+          .header-right-user-info {
+            .header-right-user-info-content {
+              display: flex;
+              align-items: center;
+              cursor: pointer;
+              .el-avatar {
+                margin-right: 0.5rem;
+              }
+            }
           }
         }
       }
+    }
+    .header-right-user-info-logout {
+      cursor: pointer;
     }
 
     .el-aside {
