@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-08 18:39:20
- * @LastEditTime: 2021-01-19 11:56:58
+ * @LastEditTime: 2021-01-21 11:43:10
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\plugins\element\index.ts
@@ -30,6 +30,7 @@ import {
   ElPagination,
   ElAvatar,
   ElPopover,
+  ElInfiniteScroll,
 
   // 插件
   ElLoading,
@@ -59,11 +60,13 @@ const components = [
   ElPagination,
   ElAvatar,
   ElPopover,
+  
 ];
 
 const plugins = [
   ElLoading,
   ElMessage,
+  ElInfiniteScroll,
 ];
 
 
