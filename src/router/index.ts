@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-08 16:28:55
- * @LastEditTime: 2021-01-20 19:00:12
+ * @LastEditTime: 2021-01-22 13:31:33
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\router\index.ts
@@ -29,7 +29,7 @@ const routes: Array<RouteRecordRaw> = [
         component: Home
       },
       {
-        path: "songlists/:id",
+        path: "songlists/:id",  // 歌单
         name: "Songlists",
         component: () => import(/* webpackChunkName: "Songlists" */ "@/views/SonglistsDetails/index.vue")
       },
@@ -41,6 +41,11 @@ const routes: Array<RouteRecordRaw> = [
         // which is lazy-loaded when the route is visited.
         component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
       },
+      {
+        path: "singerDetial/:id",
+        name: "SingerDetail",
+        component: () => import(/* webpackChunkName: "SingerDetail" */ "@/views/SingerDetail/index.vue")
+      }
     ]
   },
   // {

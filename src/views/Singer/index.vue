@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-20 18:43:59
- * @LastEditTime: 2021-01-21 22:58:33
+ * @LastEditTime: 2021-01-22 13:32:02
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\Singer\index.vue
@@ -65,6 +65,7 @@
         v-for="artistsData in artistsDataArr"
         :key="artistsData.id"
         :singerData="artistsData"
+        @click="clickSingerHandle(artistsData)"
       ></singer-com>
     </div>
   </div>
@@ -264,6 +265,10 @@ export default defineComponent({
         }
       });
     },
+    // 点击歌手事件
+    clickSingerHandle(data: any) {
+      this.$router.push(`/singerDetial/${data.id}`)
+    }
   },
 });
 </script>
