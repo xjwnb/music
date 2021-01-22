@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-22 13:21:34
- * @LastEditTime: 2021-01-22 23:04:51
+ * @LastEditTime: 2021-01-23 00:10:03
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\SingerDetail\index.vue
@@ -29,7 +29,11 @@
     </div>
     <!-- 热门音乐 50首 -->
     <div class="singer-detail-hot-songs">
-      <album-detail-com :title="'热门音乐'" :data="hotSongs"></album-detail-com>
+      <album-detail-com
+        :title="'热门音乐'"
+        :data="hotSongs"
+        @db-click="dbClickHandle"
+      ></album-detail-com>
     </div>
     <!-- 专辑 -->
     <div class="singer-detail-album-content">
@@ -48,6 +52,7 @@
           <album-detail-com
             :title="album.ablumnInfo.name"
             :data="album.songs"
+            @db-click="dbClickHandle"
           ></album-detail-com>
         </div>
       </div>
@@ -74,6 +79,15 @@ import {
 import { numberToTimeFormat, numberToDateFormat } from "@/utils/numberFormat";
 // 组件
 import { AlbumDetailCom } from "@/components";
+// vuex
+import store from "@/store";
+import {
+  AUDIO_ID_CHANGE,
+  AUDIO_LIST_ADD,
+  AUDIO_INFO_CHANGE,
+} from "@/store/mutation-types";
+// interface
+import { AudioInfoInterface } from "@/interface/public/audio";
 
 export default defineComponent({
   name: "SingerDetail",
@@ -95,7 +109,6 @@ export default defineComponent({
     let id = _this.$route.params.id;
     // 获取作者信息和热门歌曲
     getArtistInfo(id).then((res) => {
-      console.log("getArtistInfo", res);
       let data = (res as any).data;
       let artist = data.artist;
       if (data.code === 200) {
@@ -110,14 +123,24 @@ export default defineComponent({
         };
         _this.artistInfo = artistInfo;
         _this.hotSongs = data.hotSongs.map((song: any, index: number) => {
-          let songerInfo: songInfoInterface = {
+          let songerInfo = {
             id: song.id,
-            name: song.name,
+            /* name: song.name,
             index:
               (index + 1).toString().length >= 2
                 ? (index + 1).toString()
                 : `0${index + 1}`,
+            time: numberToTimeFormat(song.dt / 1000), */
+            index:
+              (index + 1).toString().length >= 2
+                ? (index + 1).toString()
+                : `0${index + 1}`,
+            songName: song.name,
+            name: song.name,
+            artistName: song.ar[0].name,
+            playTime: song.dt,
             time: numberToTimeFormat(song.dt / 1000),
+            picUrl: song.al.picUrl,
           };
           return songerInfo;
         });
@@ -133,7 +156,6 @@ export default defineComponent({
       let id = _this.$route.params.id;
       _this.page++;
       _this.getAlbumDataInfo(id, _this.page);
-
     },
     // 请求获取专辑信息
     getAlbumDataInfo(id: number, page: number) {
@@ -166,14 +188,23 @@ export default defineComponent({
                 if (data.code === 200) {
                   let albumSongs = data.songs.map(
                     (song: any, index: number) => {
-                      let songInfo: songInfoInterface = {
+                      let songInfo = {
                         id: song.id,
-                        name: song.name,
                         index:
                           (index + 1).toString().length >= 2
                             ? (index + 1).toString()
                             : `0${index + 1}`,
+                        songName: song.name,
+                        artistName: song.ar[0].name,
+                        playTime: song.dt,
                         time: numberToTimeFormat(song.dt / 1000),
+                        picUrl: song.al.picUrl,
+                        /* name: song.name,
+                        index:
+                          (index + 1).toString().length >= 2
+                            ? (index + 1).toString()
+                            : `0${index + 1}`,
+                        time: numberToTimeFormat(song.dt / 1000), */
                       };
                       return songInfo;
                     }
@@ -190,6 +221,22 @@ export default defineComponent({
             }
           });
       }
+    },
+    // 双击表单事件
+    dbClickHandle(rowData: any, column: any, event: any) {
+      let { id, picUrl, artistName, songName, playTime } = rowData;
+      let audioData: AudioInfoInterface;
+      audioData = {
+        id,
+        songName: songName,
+        artistName: artistName,
+        playTime,
+        picUrl,
+      };
+      store.commit(AUDIO_ID_CHANGE, { id });
+      store.commit(AUDIO_INFO_CHANGE, { audioInfo: audioData });
+      store.commit(AUDIO_LIST_ADD, { audioData });
+      (this as any).$bus.emit("audioPlay");
     },
   },
 });
@@ -233,8 +280,12 @@ export default defineComponent({
       display: flex;
       justify-content: center;
       width: 100%;
+      margin-top: 2rem;
       .singer-detail-album-left {
         flex: 0.3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         .el-image {
           width: 15rem;
           height: 15rem;
