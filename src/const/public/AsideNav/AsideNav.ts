@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2021-01-09 19:01:23
+ * @LastEditTime: 2021-01-23 15:27:39
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \music\src\const\public\AsideNav\AsideNav.ts
+ */
 
 export const AsideNav = [
   {
@@ -25,11 +33,11 @@ export const AsideNav = [
         path: "/discover/singer",
         text: "歌手"
       },
-      {
+     /*  {
         id: "1-5",
         path: "/discover/latestMusic",
         text: "最新音乐"
-      },
+      }, */
     ]
   },
   /* {
