@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-22 13:21:34
- * @LastEditTime: 2021-01-23 00:10:03
+ * @LastEditTime: 2021-01-23 14:59:34
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\SingerDetail\index.vue
@@ -27,34 +27,58 @@
         </div>
       </div>
     </div>
-    <!-- 热门音乐 50首 -->
-    <div class="singer-detail-hot-songs">
-      <album-detail-com
-        :title="'热门音乐'"
-        :data="hotSongs"
-        @db-click="dbClickHandle"
-      ></album-detail-com>
-    </div>
-    <!-- 专辑 -->
-    <div class="singer-detail-album-content">
+    <!-- 标签 -->
+    <div class="singer-detail-tags">
       <div
-        class="singer-detail-album"
-        v-for="(album, key) in albumArr"
-        :key="album.ablumnInfo.id"
+        v-for="(tag, index) in tags"
+        :key="index"
+        :class="['singer-detail-tag', currentTag === tag ? 'active' : '']"
+        @click="changeTagHandle(tag)"
       >
-        <div class="singer-detail-album-left">
-          <el-image :src="album.ablumnInfo.picUrl"></el-image>
-          <div class="singer-detail-album-publishTime">
-            {{ album.ablumnInfo.publishTime }}
+        {{ tag }}
+      </div>
+    </div>
+    <div v-show="currentTag === '专辑'" class="singer-detail-album">
+      <!-- 热门音乐 50首 -->
+      <div class="singer-detail-hot-songs">
+        <album-detail-com
+          :title="'热门音乐'"
+          :data="hotSongs"
+          @db-click="dbClickHandle"
+        ></album-detail-com>
+      </div>
+      <!-- 专辑 -->
+      <div class="singer-detail-album-content">
+        <div
+          class="singer-detail-album"
+          v-for="(album, key) in albumArr"
+          :key="album.ablumnInfo.id"
+        >
+          <div class="singer-detail-album-left">
+            <el-image :src="album.ablumnInfo.picUrl"></el-image>
+            <div class="singer-detail-album-publishTime">
+              {{ album.ablumnInfo.publishTime }}
+            </div>
+          </div>
+          <div class="singer-detail-album-right">
+            <album-detail-com
+              :title="album.ablumnInfo.name"
+              :data="album.songs"
+              @db-click="dbClickHandle"
+            ></album-detail-com>
           </div>
         </div>
-        <div class="singer-detail-album-right">
-          <album-detail-com
-            :title="album.ablumnInfo.name"
-            :data="album.songs"
-            @db-click="dbClickHandle"
-          ></album-detail-com>
-        </div>
+      </div>
+    </div>
+    <div v-show="currentTag !== '专辑'" class="singer-detial-desc">
+      <p class="singer-detail-briefDesc">{{ briefDesc }}</p>
+      <div
+        v-for="introducte in introduction"
+        :key="introducte.ti"
+        class="singer-detail-desc-"
+      >
+        <h2>{{ introducte.ti }}</h2>
+        <p>{{ introducte.txt }}</p>
       </div>
     </div>
   </div>
@@ -100,13 +124,19 @@ export default defineComponent({
       hotSongs: [], // 热门歌曲50首
       albumArr: [], // 专辑数组
       page: 1, // 专辑页面数
-      scrollEle: "main",
-      hasNextAlbumData: true,
+      scrollEle: "main", // 滚动条所在的标签
+      hasNextAlbumData: true, // 判断是否有下一个专辑（防止多余的加载请求）
+      currentTag: "专辑",
+      tags: ["专辑", "歌手详情"],
+      briefDesc: "", // 歌手描述
+      introduction: [], // 其他描述
+      id: 0, // 歌手 ID
     };
   },
   mounted() {
     let _this = this as any;
     let id = _this.$route.params.id;
+    _this.id = id;
     // 获取作者信息和热门歌曲
     getArtistInfo(id).then((res) => {
       let data = (res as any).data;
@@ -153,9 +183,11 @@ export default defineComponent({
     // 滚动到底部触发事件
     load() {
       let _this = this as any;
-      let id = _this.$route.params.id;
-      _this.page++;
-      _this.getAlbumDataInfo(id, _this.page);
+      if (_this.currentTag === "专辑") {
+        let id = _this.$route.params.id;
+        _this.page++;
+        _this.getAlbumDataInfo(id, _this.page);
+      }
     },
     // 请求获取专辑信息
     getAlbumDataInfo(id: number, page: number) {
@@ -199,6 +231,7 @@ export default defineComponent({
                         playTime: song.dt,
                         time: numberToTimeFormat(song.dt / 1000),
                         picUrl: song.al.picUrl,
+                        name: song.name,
                         /* name: song.name,
                         index:
                           (index + 1).toString().length >= 2
@@ -237,6 +270,20 @@ export default defineComponent({
       store.commit(AUDIO_INFO_CHANGE, { audioInfo: audioData });
       store.commit(AUDIO_LIST_ADD, { audioData });
       (this as any).$bus.emit("audioPlay");
+    },
+    // 标签修改
+    changeTagHandle(tag: string) {
+      let _this = this as any;
+      _this.currentTag = tag;
+      if (!_this.briefDesc) {
+        getArtistDescInfo(_this.id).then((res) => {
+          let data = (res as any).data;
+          if (data.code === 200) {
+            _this.briefDesc = data.briefDesc;
+            _this.introduction = data.introduction;
+          }
+        });
+      }
     },
   },
 });
@@ -295,6 +342,27 @@ export default defineComponent({
       .singer-detail-album-right {
         flex: 0.7;
       }
+    }
+  }
+  // 标签
+  .singer-detail-tags {
+    display: flex;
+    .singer-detail-tag {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+    }
+    .active {
+      border-bottom: 1px solid #fa6e6e;
+    }
+  }
+  // 描述
+  .singer-detial-desc {
+    p {
+      text-indent: 2rem;
+    }
+    .singer-detail-briefDesc {
+      font-size: .8rem;
+      color: #7e7e7e;
     }
   }
 }
