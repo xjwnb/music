@@ -13,8 +13,16 @@
     ></audio>
     <!-- 左侧歌曲信息 -->
     <div v-if="id" class="audio-player-left-info">
-      <div class="audio-player-left-info-image">
+      <div class="audio-player-left-info-image" @click="clickImageHandle">
         <el-image :src="audioInfo.picUrl"></el-image>
+        <div class="audio-player-left-info-image-show">
+          <div v-if="!isshowTop" class="audio-player-left-info-image-show-top">
+            <span class="iconfont icon-xiangshang"></span>
+          </div>
+          <div v-else class="audio-player-left-info-image-show-bottom">
+            <span class="iconfont icon-xiangxia"></span>
+          </div>
+        </div>
       </div>
       <div class="audio-player-left-info-msg">
         <div class="audio-player-left-info-msg-name">
@@ -72,7 +80,7 @@
           class="audio-player-right-edit-voice-control-hasVoice"
         >
           <template v-if="hasVoice">
-            <span class="iconfont icon-shengyinkai"> </span>
+            <span class="iconfont icon-shengyin"> </span>
           </template>
           <template v-else>
             <span class="iconfont icon-shengyinguan"> </span>
@@ -83,6 +91,14 @@
         </div>
       </div>
     </div>
+    <!-- 展示歌词 -->
+    <drawer-com
+      :top="60"
+      :bottom="80"
+      direction="btt"
+      :value="isshowTop"
+      :width="'100%'"
+    ></drawer-com>
   </div>
 </template>
 
@@ -96,9 +112,14 @@ import { GET_AUDIO_ID } from "@/store/getter-types";
 import { AUDIO_INFO, AUDIO_LIST } from "@/store/state-types";
 // number format utils
 import { numberToTimeFormat } from "@/utils/numberFormat/index";
+// 组件
+import { DrawerCom } from "@/components";
 
 export default defineComponent({
   name: "AudioPlayer",
+  components: {
+    DrawerCom,
+  },
   data() {
     return {
       isplay: false, // 播放状态
@@ -115,6 +136,7 @@ export default defineComponent({
       isloop: false, // 是否循环播放
       totalTimeFormat: "", // 格式化后总时间
       nowTimeFormat: "", // 格式化后的当前时间
+      isshowTop: false, // 是否展示向上图片（el-image）
     };
   },
   watch: {
@@ -322,6 +344,16 @@ export default defineComponent({
         _this.audio.loop = true;
       } */
     },
+    // 点击歌曲头像图片
+    clickImageHandle() {
+      let _this = this as any;
+      _this.isshowTop = !_this.isshowTop;
+    },
+    // 关闭抽屉
+    closeDrawerHandle() {
+      let _this = this as any;
+      _this.isshowTop = !_this.isshowTop;
+    },
   },
 });
 </script>
@@ -360,14 +392,57 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
     .audio-player-left-info-image {
+      position: relative;
+      &:hover .audio-player-left-info-image-show {
+        display: block;
+      }
       .el-image {
         width: 3rem;
         height: 3rem;
         border-radius: 0.2rem;
-        margin-right: 1rem;
+        // margin-right: 1rem;
+        cursor: pointer;
+      }
+      .audio-player-left-info-image-show {
+        display: none;
+        cursor: pointer;
+        // position: absolute;
+        .audio-player-left-info-image-show-top {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 3rem;
+          height: 3rem;
+          border-radius: 0.2rem;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          span {
+            font-size: 1.7rem;
+            color: #ffffff;
+          }
+        }
+        .audio-player-left-info-image-show-bottom {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 3rem;
+          height: 3rem;
+          border-radius: 0.2rem;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          span {
+            font-size: 1.7rem;
+            color: #ffffff;
+          }
+        }
       }
     }
     .audio-player-left-info-msg {
+      margin-left: 1rem;
       .audio-player-left-info-msg-name {
         .audio-player-left-info-msg-song-name {
           font-size: 1rem;
@@ -470,4 +545,12 @@ export default defineComponent({
     border-color: #c0c4cc;
   }
 }
+
+// 抽屉样式
+/deep/ .el-drawer.btt {
+  bottom: 80px;
+}
+/* .custom-class {
+  bottom: 70px;
+} */
 </style>
