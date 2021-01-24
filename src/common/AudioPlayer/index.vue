@@ -40,9 +40,9 @@
     </div>
     <div v-else class="audio-player-left-empty"></div>
     <div class="audio-player-center-control">
-      <div class="audio-player-center-control-before">
+      <!-- <div class="audio-player-center-control-before">
         <span class="iconfont icon-houtui"></span>
-      </div>
+      </div> -->
       <!-- 播放暂停 -->
       <div class="audio-player-center-control-play" @click="audioPlay">
         <template v-if="!isplay">
@@ -57,9 +57,9 @@
           </div>
         </template>
       </div>
-      <div class="audio-player-center-control-after">
+      <!-- <div class="audio-player-center-control-after">
         <span class="iconfont icon-qianjin"></span>
-      </div>
+      </div> -->
     </div>
     <!-- 右侧控制 -->
     <div class="audio-player-right-edit">
@@ -93,12 +93,34 @@
     </div>
     <!-- 展示歌词 -->
     <drawer-com
-      :top="60"
-      :bottom="80"
+      :top="48"
+      :bottom="83"
       direction="btt"
       :value="isshowTop"
       :width="'100%'"
-    ></drawer-com>
+    >
+      <div v-if="id" class="drawer-content">
+        <div class="drawer-content-left">
+          <el-image :src="audioInfo.picUrl"></el-image>
+        </div>
+        <div class="drawer-content-right">
+          <div class="drawer-content-right-lyric-content">
+            <div
+              v-for="(lyr, index) in lyric"
+              :key="index"
+              :class="[
+                'drawer-content-right-lyric',
+                lyr.playTime <= time && lyric[index + 1].playTime > time
+                  ? 'drawer-lyr-active'
+                  : '',
+              ]"
+            >
+              {{ lyr.content }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </drawer-com>
   </div>
 </template>
 
@@ -114,6 +136,8 @@ import { AUDIO_INFO, AUDIO_LIST } from "@/store/state-types";
 import { numberToTimeFormat } from "@/utils/numberFormat/index";
 // 组件
 import { DrawerCom } from "@/components";
+// 请求
+import { getSongLyric } from "@/api/audioInfo";
 
 export default defineComponent({
   name: "AudioPlayer",
@@ -137,8 +161,15 @@ export default defineComponent({
       totalTimeFormat: "", // 格式化后总时间
       nowTimeFormat: "", // 格式化后的当前时间
       isshowTop: false, // 是否展示向上图片（el-image）
+      imageControl: null,
+      imageTimer: null,
+      lyric: [], // 歌词数组
+      // minutesSeconds: 0, // 毫秒
+      // minutesSecondsTimer: null, // 毫秒计时器
+      // nowTimeFormat === lyr.time ? 'drawer-lyr-active' : '',
     };
   },
+  setup() {},
   watch: {
     // voiceVal 变化时间
     voiceVal(newVal) {
@@ -151,22 +182,99 @@ export default defineComponent({
     },
     time(newVal) {
       let _this = this as any;
+      let drawerActiveEle: any;
+      let drawerActiveEleLength: number;
+      let drawerLyrContentEle: any;
+      let drawerContentRightEle: any;
+      let drawerContentRightClientHeight: any;
+      if (_this.isshowTop) {
+        _this.$nextTick(() => {
+          drawerActiveEle = document.getElementsByClassName(
+            "drawer-lyr-active"
+          );
+          drawerContentRightEle = document.getElementsByClassName(
+            "drawer-content-right"
+          )[0];
+          drawerContentRightClientHeight = drawerContentRightEle.clientHeight;
+          drawerActiveEleLength = drawerActiveEle.length;
+          drawerActiveEle = drawerActiveEle[drawerActiveEleLength - 1];
+          let offsetTop = drawerActiveEle.offsetTop;
+          drawerLyrContentEle = document.getElementsByClassName(
+            "drawer-content-right-lyric-content"
+          )[0];
+          drawerLyrContentEle.style.transform = `translateY(-${
+            offsetTop - drawerContentRightClientHeight / 2
+          }px)`;
+        });
+      }
       _this.nowTimeFormat = numberToTimeFormat(newVal);
+    },
+    isplay(newVal) {
+      let _this = this as any;
+      _this.imageControl && _this.imageControl.stop();
+      if (!newVal) {
+        _this.imageControl && _this.imageControl.stop();
+      } else {
+        _this.imageControl && _this.imageControl.start();
+      }
+    },
+    id(newVal) {
+      let _this = this as any;
+      let lyr: string = "";
+      getSongLyric(newVal).then((res) => {
+        let data = (res as any).data;
+        if (data.code === 200) {
+          lyr = data.lrc.lyric;
+          let lyrArr = lyr.split(/\n/g);
+          let newlyrArr: any = [];
+          lyrArr.forEach((lyr: any, index: number) => {
+            if (lyr.trim()) {
+              // let time = lyr.match(/\[.\]/g)[0];
+              // let content = lyr.replace(time, "");
+              let minutes = Number(lyr.slice(1, 3));
+              let seconds = Number(lyr.slice(4, 6));
+              let contentStart = lyr.search(/\]/g) + 1;
+              newlyrArr.push({
+                time: minutes + " : " + minutes,
+                content: lyr.slice(contentStart),
+                playTime: minutes * 60 + seconds,
+              });
+            }
+          });
+          _this.lyric = newlyrArr;
+        }
+      });
     },
     /* totalTimeShowFormat(newVal) {
       let _this = (this as any);
       return numberToTimeFormat(newVal);
     } */
   },
-  computed: {
-    /*  totalTimeShowFormat() {
-      let _this = (this as any);
-      return numberToTimeFormat(_this.totalTime);
-    } */
+  filters: {
+    controlLyrActiveTimeClass(lyr: any, lyric: any[], index: number) {
+      let _this = this as any;
+      // nowTimeFormat === lyr.time  ? 'drawer-lyr-active' : ''
+      if (_this.nowTimeFormat === lyr.time) {
+        if (
+          _this.nowTimeFormat.slice(1, 3) ===
+            lyric[index + 1].time.slice(1, 3) &&
+          Number(_this.nowTimeFormat.slice(-2)) <
+            Number(lyric[index + 1].time.slice(-2))
+        ) {
+          return "drawer-lyr-active";
+        } else {
+          return "";
+        }
+      } else {
+        return "";
+      }
+      // nowTimeFormat === lyr.time ? (nowTimeFormat.slice(1, 3) ===lyric[index + 1].time.slice(1, 3) &&Number(nowTimeFormat.slice(-2)) <Number(lyric[index + 1].time.slice(-2)) ? 'drawer-lyr-active' : '')  : ''
+    },
   },
   mounted() {
     // store.commit("formatState");
     let _this = this as any;
+    console.log(_this);
     let audio = document.getElementsByTagName("audio")[0];
     // 设置是否循环
     // audio.setAttribute("loop", "loop");
@@ -181,6 +289,7 @@ export default defineComponent({
       _this.time = 0;
       clearTimeout(_this.playTimeout);
       clearInterval(_this.timeInterval);
+      _this.imageControl && _this.imageControl.stop();
       // 如果不是单曲循环，则播放下一首歌曲
       if (!_this.isloop) {
         let audio_list = store.state[AUDIO_LIST];
@@ -188,7 +297,7 @@ export default defineComponent({
           (audio) => audio.id === _this.id
         );
         if (audio_list[nowAudioIndex + 2]) {
-          console.log(audio_list[nowAudioIndex + 2]);
+          // console.log(audio_list[nowAudioIndex + 2]);
           _this.id = audio_list[nowAudioIndex + 2].id;
           _this.audioInfo = audio_list[nowAudioIndex + 2];
           _this.audio.play();
@@ -223,7 +332,9 @@ export default defineComponent({
     // 数据请求完成
     audio.addEventListener("canplaythrough", () => {
       _this.audio.play();
-      console.log("canplaythrough");
+      _this.imageControl && _this.imageControl.stop();
+      _this.imageControl && _this.imageControl.start();
+      // console.log("canplaythrough");
       if (audio.loop) {
         _this.time = 0;
       }
@@ -243,6 +354,7 @@ export default defineComponent({
       console.log("store.state[AUDIO_LIST]", store.state[AUDIO_LIST]);
       clearInterval(_this.timeInterval);
       clearTimeout(_this.playTimeout);
+      _this.imageControl && _this.imageControl.stop();
       let audio_id = store.getters[GET_AUDIO_ID];
       if (audio_id == _this.id) {
         clearInterval(_this.timeInterval);
@@ -262,8 +374,10 @@ export default defineComponent({
         return;
       }
       _this.id = (audio_id as number).toString();
+      // _this.imageControl = _this.imageRotateControl();
       _this.audioInfo = store.state[AUDIO_INFO];
       _this.audio.pause();
+      // _this.imageControl && _this.imageControl.stop();
       /* clearInterval(_this.timeInterval);
       clearTimeout(_this.playTimeout); */
       _this.time = 0;
@@ -297,17 +411,20 @@ export default defineComponent({
     let _this = this as any;
     clearTimeout(_this.playTimeout);
     clearInterval(_this.timeInterval);
+    _this.imageControl && _this.imageControl.stop();
   },
   methods: {
     // 播放 暂停
     audioPlay() {
       let _this = this as any;
       clearInterval(_this.timeInterval);
+      _this.imageControl && _this.imageControl.stop();
       if (_this.id) {
         if (_this.audio) {
           if (_this.audio.paused) {
             clearInterval(_this.timeInterval);
             _this.audio.play();
+            _this.imageControl && _this.imageControl.start();
             _this.isplay = true;
             _this.timeInterval = setInterval(() => {
               this.time++;
@@ -315,6 +432,7 @@ export default defineComponent({
           } else {
             clearInterval(_this.timeInterval);
             _this.audio.pause();
+            _this.imageControl && _this.imageControl.stop();
             this.isplay = false;
           }
         }
@@ -334,6 +452,7 @@ export default defineComponent({
     // 是否单曲循环
     audioIsLoopChangeHandle() {
       let _this = this as any;
+      _this.imageControl && _this.imageControl.stop();
       _this.isloop = !_this.isloop;
       _this.audio.loop = !_this.audio.loop;
       /* if (_this.isloop) {
@@ -348,11 +467,42 @@ export default defineComponent({
     clickImageHandle() {
       let _this = this as any;
       _this.isshowTop = !_this.isshowTop;
+      _this.imageControl && _this.imageControl.stop();
+      _this.imageControl = _this.imageRotateControl();
+      _this.imageControl && _this.imageControl.start();
     },
-    // 关闭抽屉
-    closeDrawerHandle() {
+    // 歌曲碟片旋转控制
+    imageRotateControl() {
       let _this = this as any;
-      _this.isshowTop = !_this.isshowTop;
+      const element: any = document.getElementsByClassName(
+        "drawer-content-left"
+      )[0];
+      const imageEle = element.getElementsByClassName("el-image")[0];
+      // let timer: any = null;
+      let start = () => {
+        _this.imageTimer = window.setInterval(
+          _this.rotate.bind(this, imageEle),
+          100
+        );
+      };
+      let stop = () => {
+        window.clearInterval(_this.imageTimer);
+      };
+      return {
+        start: start,
+        stop: stop,
+      };
+    },
+    // 旋转函数
+    rotate(imageEle: any) {
+      let _this = this as any;
+      if (_this.isplay) {
+        let reg = /[0-9]+/g;
+        let rotate = imageEle.style.transform || "rotate(0deg)";
+        let rotateNum = rotate.match(reg)[0];
+        rotateNum === "360" ? (rotateNum = "0") : null;
+        imageEle.style.transform = `rotate(${Number(rotateNum) + 1}deg)`;
+      }
     },
   },
 });
@@ -547,10 +697,36 @@ export default defineComponent({
 }
 
 // 抽屉样式
-/deep/ .el-drawer.btt {
-  bottom: 80px;
+.drawer-content {
+  display: flex;
+  padding: 3rem;
+  justify-content: center;
+  align-items: center;
+  .drawer-content-left {
+    margin: 0 3rem;
+    .el-image {
+      width: 25rem;
+      height: 25rem;
+      border-radius: 50%;
+    }
+  }
+  .drawer-content-right {
+    min-width: 20rem;
+    height: 30rem;
+    padding: 1rem;
+    overflow: hidden;
+    .drawer-content-right-lyric-content {
+      transition: all .5s;
+      .drawer-content-right-lyric {
+        margin: 1rem auto;
+      }
+    }
+  }
 }
-/* .custom-class {
-  bottom: 70px;
-} */
+
+// 歌词活动样式
+.drawer-lyr-active {
+  font-size: 1.2rem;
+  color: turquoise;
+}
 </style>

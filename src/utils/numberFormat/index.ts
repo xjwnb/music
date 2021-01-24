@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-11 14:57:00
- * @LastEditTime: 2021-01-17 22:22:31
+ * @LastEditTime: 2021-01-24 15:02:34
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\utils\numberformat\index.ts
@@ -43,6 +43,31 @@ export function numberToTimeFormat(num: number | string): string {
   secondsLength <= 1 ? secondsStr = `0${seconds}` : secondsStr = `${seconds}`;
   minutesLength <= 1 ? minutesStr = `0${minutes}` : minutesStr = `${minutes}`;
   return `${minutesStr} : ${secondsStr}`;
+}
+
+/**
+ * 将毫秒数转换为 分钟 : 秒 的格式。
+ * @param num number | string
+ */
+export function numberToMilliSecondsTimeFormat(num: number | string): string {
+  let n: number = 0;
+  let isString = typeof num === "string" ? true : false;
+  isString && (n = Number(num));
+  (n as any) = num;
+  let date = new Date(n);
+  /* let seconds: number = Math.floor((n as number) % 60);
+  let minutes: number = Math.floor((n as number) / 60); */
+  let seconds: number = date.getSeconds();
+  let minutes: number = date.getMinutes();
+  let minutesSeconds = date.getMilliseconds();
+
+  let secondsLength = (seconds as number).toString().length;
+  let minutesLength = (minutes as number).toString().length;
+  let secondsStr = "";
+  let minutesStr = "";
+  secondsLength <= 1 ? secondsStr = `0${seconds}` : secondsStr = `${seconds}`;
+  minutesLength <= 1 ? minutesStr = `0${minutes}` : minutesStr = `${minutes}`;
+  return `${minutesStr}:${secondsStr}:${minutesSeconds}`;
 }
 
 

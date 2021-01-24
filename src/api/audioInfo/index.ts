@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-23 18:51:30
- * @LastEditTime: 2021-01-23 18:53:56
+ * @LastEditTime: 2021-01-24 14:41:06
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\api\audioInfo\index.ts
