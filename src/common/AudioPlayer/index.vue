@@ -452,7 +452,6 @@ export default defineComponent({
     // 是否单曲循环
     audioIsLoopChangeHandle() {
       let _this = this as any;
-      _this.imageControl && _this.imageControl.stop();
       _this.isloop = !_this.isloop;
       _this.audio.loop = !_this.audio.loop;
       /* if (_this.isloop) {

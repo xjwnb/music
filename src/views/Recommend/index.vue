@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-09 22:49:56
- * @LastEditTime: 2021-01-18 23:21:14
+ * @LastEditTime: 2021-01-25 01:36:04
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\Recommend\index.vue
@@ -51,7 +51,13 @@
 
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import {
+  defineComponent,
+  reactive,
+  ref,
+  getCurrentInstance,
+  onMounted,
+} from "vue";
 // 请求
 import {
   getRecommendBanner,
@@ -96,6 +102,101 @@ export default defineComponent({
       latestMusicData: [], // 最新音乐数据
     };
   },
+  setup($props) {
+    // banner 数据
+    const bannersData = ref([]);
+    // 推荐歌单数据
+    const personalizedSongData = ref([]);
+    // 最新音乐数据
+    const latestMusicData = ref([]);
+    const instance: any = getCurrentInstance();
+    const root = instance.ctx.$root;
+    console.log(instance);
+
+    onMounted(async () => {
+      // banner 数据请求
+      try {
+        const res: any = await getRecommendBanner();
+        const data: any = res.data;
+        if (data.code === 200 && data.banners) {
+          bannersData.value = data.banners;
+        } else {
+          console.log("getRecommendBanner", "出错了");
+        }
+      } catch (e) {
+        console.log(e);
+      }
+
+      // 获取推荐歌单
+      getPersonalizedSong()
+        .then((res) => {
+          let data = (res as any).data;
+          if (data.code === 200) {
+            personalizedSongData.value = data.result;
+          } else {
+            console.log("getPersonalizedSong 推荐歌单", data.code);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      // 获取最新音乐
+      getPersonalizedNewSong()
+        .then((res) => {
+          let data = (res as any).data;
+          if (data.code === 200) {
+            latestMusicData.value = data.result;
+          }
+        })
+        .catch((err) => {
+          console.log("最新音乐", err);
+        });
+    });
+
+    // methods
+    // 歌单点击事件
+    const songSheetClickHandle = (audioData: any) => {
+      root.$router.push(`/songlists/${audioData.id}`);
+    };
+
+    // 最新音乐点击
+    const latestMusicClickHandle = (latestMusic: any) => {
+      console.log(latestMusic);
+      let { id, name, song, picUrl } = latestMusic;
+      let audioInfo: AudioInfoInterface = {
+        id: id,
+        songName: name,
+        artistName: song.artists[0].name,
+        playTime: song.bMusic.playTime,
+        picUrl: picUrl,
+      };
+      store.commit(AUDIO_ID_CHANGE, { id: id });
+      store.commit(AUDIO_INFO_CHANGE, {
+        audioInfo: audioInfo,
+      });
+      store.commit(AUDIO_LIST_ADD, {
+        audioData: audioInfo,
+      });
+      // 触发播放音频
+      root.$bus.emit("audioPlay");
+    };
+
+    // 点击推荐歌单title事件
+    const clickTitleHandle = () => {
+      root.$router.push("/discover/songSheet");
+    };
+
+    return {
+      bannersData,
+      personalizedSongData,
+      latestMusicData,
+      // methods
+      songSheetClickHandle,
+      latestMusicClickHandle,
+      clickTitleHandle,
+    };
+  },
   mounted() {
     // 获取 banner
     getRecommendBanner()
@@ -108,7 +209,6 @@ export default defineComponent({
       .catch((err) => {
         console.log(err);
       });
-
     // 获取推荐歌单
     getPersonalizedSong()
       .then((res) => {
@@ -123,7 +223,6 @@ export default defineComponent({
       .catch((err) => {
         console.log(err);
       });
-
     // 获取最新音乐
     getPersonalizedNewSong()
       .then((res) => {
@@ -140,11 +239,11 @@ export default defineComponent({
   methods: {
     // 歌单点击事件
     songSheetClickHandle(audioData: any) {
-      this.$router.push(`/songlists/${audioData.id}`)
+      this.$router.push(`/songlists/${audioData.id}`);
       // 修改 audio id
-      /* useChangeAudioIdHooks(audioData.id);
-      // 添加到 播放列表中
-      useAddAudioListHooks(audioData); */
+      // useChangeAudioIdHooks(audioData.id);
+      // // 添加到 播放列表中
+      // useAddAudioListHooks(audioData);
       // (this as any).$bus.emit("audioPlay");
     },
     // 最新音乐点击
@@ -156,8 +255,8 @@ export default defineComponent({
         songName: name,
         artistName: song.artists[0].name,
         playTime: song.bMusic.playTime,
-        picUrl: picUrl
-      }
+        picUrl: picUrl,
+      };
       store.commit(AUDIO_ID_CHANGE, { id: id });
       store.commit(AUDIO_INFO_CHANGE, {
         audioInfo: audioInfo,
@@ -171,7 +270,7 @@ export default defineComponent({
     // 点击推荐歌单title事件
     clickTitleHandle() {
       this.$router.push("/discover/songSheet");
-    }
+    },
   },
 });
 </script>
