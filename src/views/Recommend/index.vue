@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-09 22:49:56
- * @LastEditTime: 2021-01-25 01:36:04
+ * @LastEditTime: 2021-01-25 01:38:37
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\Recommend\index.vue
@@ -95,13 +95,13 @@ export default defineComponent({
     SongSheetCom,
     LatestMusicCom,
   },
-  data() {
+/*   data() {
     return {
       bannersData: [], // banner 数据
       personalizedSongData: [], // 推荐歌单数据
       latestMusicData: [], // 最新音乐数据
     };
-  },
+  }, */
   setup($props) {
     // banner 数据
     const bannersData = ref([]);
@@ -111,7 +111,6 @@ export default defineComponent({
     const latestMusicData = ref([]);
     const instance: any = getCurrentInstance();
     const root = instance.ctx.$root;
-    console.log(instance);
 
     onMounted(async () => {
       // banner 数据请求
@@ -197,7 +196,7 @@ export default defineComponent({
       clickTitleHandle,
     };
   },
-  mounted() {
+  /* mounted() {
     // 获取 banner
     getRecommendBanner()
       .then((res) => {
@@ -235,8 +234,8 @@ export default defineComponent({
       .catch((err) => {
         console.log("最新音乐", err);
       });
-  },
-  methods: {
+  }, */
+ /*  methods: {
     // 歌单点击事件
     songSheetClickHandle(audioData: any) {
       this.$router.push(`/songlists/${audioData.id}`);
@@ -271,7 +270,7 @@ export default defineComponent({
     clickTitleHandle() {
       this.$router.push("/discover/songSheet");
     },
-  },
+  }, */
 });
 </script>
 

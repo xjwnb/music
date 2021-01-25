@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-13 21:11:43
- * @LastEditTime: 2021-01-22 23:50:46
+ * @LastEditTime: 2021-01-25 16:23:21
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\SonglistsDetails\index.vue
@@ -12,11 +12,11 @@
     <!-- 歌单信息 -->
     <div class="songlists-details-info">
       <div class="songlists-details-info-img">
-        <el-image :src="coverImgUrl"></el-image>
+        <el-image :src="coverImgUrls"></el-image>
       </div>
       <div class="songlists-details-info-content">
         <div class="songlists-details-info-name">
-          <h1>{{ name }}</h1>
+          <h1>{{ names }}</h1>
         </div>
         <div class="songlists-details-info-author">
           <el-image :src="avatarUrl"></el-image>
@@ -94,7 +94,7 @@
         v-show="currentTab === 'comment'"
         class="songlist-detail-content-comment"
       >
-        最新评论（{{ commentCount }}）
+        最新评论（{{ commentCounts }}）
         <!-- 内容 -->
         <div class="songlist-detail-content-comment-list-content">
           <div
@@ -165,7 +165,14 @@ import {
   songlistCommentInterface,
 } from "@/interface/views/songlist";
 // vue
-import { defineComponent } from "vue";
+import {
+  defineComponent,
+  getCurrentInstance,
+  ref,
+  reactive,
+  onMounted,
+  computed,
+} from "vue";
 
 export default defineComponent({
   name: "SonglistsDetails",
@@ -206,7 +213,296 @@ export default defineComponent({
       currentCommentArray: [], // 当前页的评论
     };
   },
-  computed: {
+  setup() {
+    const id = ref(""); // 歌单 id
+    const coverImgUrls = ref(""); // 歌单图片 url
+    const createTimes = ref(""); // 歌单创建时间
+    const descriptions = ref(""); // 歌单描述
+    const names = ref(""); // 歌单名称
+    const avatarUrl = ref(""); // 作者头像 url
+    const playCounts = ref(0); // 播放次数
+    const tagss = ref([]); // 歌单标签
+    const trackCounts = ref(0); // 歌单中的歌曲数量
+    const trackIdss = ref([]); // 歌单中的歌曲 id 对象数组
+    const nickname = ref(""); // 歌单作者昵称
+    const isFoldDescription = ref(true); // 描述是否折叠
+    const songslist = ref([]); // 歌曲数组
+    const tabsInfo = reactive([
+      // 标签信息
+      {
+        id: 1,
+        tab: "歌曲列表",
+        alias: "songlist",
+      },
+      {
+        id: 2,
+        tab: "评论",
+        alias: "comment",
+      },
+    ]);
+    const currentTab = ref("songlist"); // 当前标签
+    const songs = ref<songlistInterface[]>([]); // 歌曲数组
+    const loading = ref<any | null>(null); // 加载
+    const commentCounts = ref(0); // 评论数量
+    const currentPage = ref(1); // 当前页
+    const commentArray : any = ref([]); // 评论数组
+    const currentCommentArray : any = ref([]); // 当前页的评论
+
+    const instance: any = getCurrentInstance();
+    const root = instance.ctx.$root;
+
+
+    // computed
+    // 播放次数格式化
+    const playCountFormat = computed(() => {
+      return numberFormat(playCounts.value);
+    });
+    // 标签
+    const tagFormat = computed(() => {
+      let tags1 = tagss.value;
+      return tags1.join(" / ");
+    });
+    // 创建时间格式化
+    const createTimeFormat = computed(() => {
+      return numberToDateFormat(Number(createTimes.value));
+    })
+
+    // mounted
+    onMounted(() => {
+      // loading
+      const loading = root.$loading({
+        target: document.getElementsByClassName(
+          "songlist-detail-content-songs"
+        )[0],
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      loading.value = loading;
+
+      // params id
+      let ids = root.$route.params.id;
+      id.value = ids;
+      // 请求数据
+      getSongListsById(ids).then((res) => {
+        let data = (res as any).data;
+        if (data.code === 200) {
+          let {
+            coverImgUrl,
+            createTime,
+            description,
+            name,
+            playCount,
+            tags,
+            trackCount,
+            trackIds,
+            creator,
+            commentCount,
+          } = data.playlist;
+          nickname.value = creator.nickname;
+          avatarUrl.value = creator.avatarUrl;
+          coverImgUrls.value = coverImgUrl;
+          createTimes.value = createTime;
+          descriptions.value = description;
+          names.value = name;
+          playCounts.value = playCount;
+          tagss.value = tags;
+          trackCounts.value = trackCount;
+          trackIdss.value = trackIds;
+          commentCounts.value = commentCount;
+          // 歌曲 id 数组
+          let idsArr: any[] = [];
+          trackIds.forEach((id: any) => {
+            (Array as any).prototype.push.call(idsArr, id.id);
+          });
+          // 通过 id 获取歌曲信息
+          getSongDetailByIds(idsArr.join(",")).then((res) => {
+            if ((res as any).status === 200) {
+              let songsData = (res as any).data.songs;
+              let songs1: songlistInterface[] = songsData.map(
+                (song: any, index: number) => {
+                  return {
+                    num:
+                      (index + 1).toString().length >= 2
+                        ? (index + 1).toString()
+                        : `0${index + 1}`,
+                    id: song.id,
+                    title: song.name,
+                    picUrl: song.al.picUrl,
+                    songer: song.ar[0].name,
+                    album: song.al.name,
+                    playTimeFormat: numberToTimeFormat(song.dt / 1000),
+                    playTime: song.dt,
+                  };
+                }
+              );
+              songs.value = songs1;
+              loading.value.close();
+            }
+          });
+        }
+      });
+    });
+
+    // methods
+    // 展开歌单简介
+    const foldChange =() => {
+      isFoldDescription.value = !isFoldDescription.value;
+    };
+    // 表单行双击事件（播放）
+    const dbTableClickHandle = (rowData: any): void  => {
+      let { id, picUrl, songer, title, playTime } = rowData;
+      let audioData: AudioInfoInterface;
+      audioData = {
+        id,
+        songName: title,
+        artistName: songer,
+        playTime,
+        picUrl,
+      };
+      store.commit(AUDIO_ID_CHANGE, { id });
+      store.commit(AUDIO_INFO_CHANGE, { audioInfo: audioData });
+      store.commit(AUDIO_LIST_ADD, { audioData });
+      root.$bus.emit("audioPlay");
+    };
+    // 切换标签事件
+    const tabChangeHandle = (tabAlias: string) => {
+      currentTab.value = tabAlias;
+      let loading = root.$loading({
+        target: document.getElementsByClassName(
+          "songlist-detail-content-comment-list-content"
+        )[0],
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      if (!currentCommentArray.value[0]) {
+        getPlaylistCommentById(id.value, 0).then((res) => {
+          let commentArr: songlistCommentInterface[];
+          let data = (res as any).data;
+          let commentData: [] = data.comments;
+          commentArr = commentData.map((comment: any, index: any) => {
+            let commentInfo = {
+              nickName: comment.user.nickname,
+              picUrl: comment.user.avatarUrl,
+              content: comment.content,
+              likedCount: comment.likedCount,
+              replied: comment.beReplied,
+              time: comment.time,
+            };
+            commentArray.value[index] = commentInfo;
+            return commentInfo;
+          });
+          currentCommentArray.value = commentArr;
+          loading.close();
+          // _this.commentArray.push(commentArr);
+        });
+      }
+      loading.close();
+    };
+    // 评论分页事件
+    const handleSizeChange = (val: number) => {
+      console.log(`每页 ${val} 条`);
+    };
+    const handleCurrentChange = (val: number) => {
+      let loading = root.$loading({
+        target: document.getElementsByClassName(
+          "songlist-detail-content-comment-list-content"
+        )[0],
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      currentPage.value = val;
+      if (commentArray.value[(val - 1) * 20] === undefined) {
+        getPlaylistCommentById(id.value, val - 1).then((res) => {
+          let commentArr: songlistCommentInterface[];
+          let data = (res as any).data;
+          let commentData: [] = data.comments;
+          commentArr = commentData.map((comment: any, index: number) => {
+            let commentInfo = {
+              nickName: comment.user.nickname,
+              picUrl: comment.user.avatarUrl,
+              content: comment.content,
+              likedCount: comment.likedCount,
+              replied: comment.beReplied,
+              time: comment.time,
+            };
+            commentArray.value[(val - 1) * 20 + index] = commentInfo;
+            return commentInfo;
+          });
+          currentCommentArray.value = commentArr;
+          loading.close();
+          // _this.commentArray.push(commentArr);
+        });
+      } else {
+        let currentPageNum = commentCounts.value - (val - 1) * 20;
+        currentCommentArray.value = [];
+        if (currentPageNum > 20) {
+          for (let i = 0, l = 20; i < l; i++) {
+            currentCommentArray.value[i] =
+              commentArray.value[(val - 1) * 20 + i];
+          }
+        } else {
+          for (let ii = 0, ll = currentPageNum; ii < ll; ii++) {
+            currentCommentArray.value[ii] =
+              commentArray.value[(val - 1) * 20 + ii];
+          }
+        }
+        loading.close();
+      }
+    };
+    // 格式化 评论时间
+    const commentTimeFormat = (time: number) => {
+      return numberToTimeDistanceFormat(time);
+    };
+
+
+    return {
+      id, // 歌单 id
+      coverImgUrls, // 歌单图片 url
+      createTimes, // 歌单创建时间
+      descriptions, // 歌单描述
+      names, // 歌单名称
+      avatarUrl, // 作者头像 url
+      playCounts, // 播放次数
+      tagss, // 歌单标签
+      trackCounts, // 歌单中的歌曲数量
+      trackIdss, // 歌单中的歌曲 id 对象数组
+      nickname, // 歌单作者昵称
+      isFoldDescription, // 描述是否折叠
+      songslist, // 歌曲数组
+      tabsInfo,
+      currentTab, // 当前标签
+      songs, // 歌曲数组
+      loading, // 加载
+      commentCounts, // 评论数量
+      currentPage, // 当前页
+      commentArray, // 评论数组
+      currentCommentArray, // 当前页的评论
+
+      // computed
+      playCountFormat, // 播放次数格式化
+      tagFormat, // 标签
+      createTimeFormat, // 创建时间格式化
+
+      // methods
+      foldChange, // 展开歌单简介
+      dbTableClickHandle, // 表单行双击事件（播放）
+      tabChangeHandle, // 切换标签事件
+      handleSizeChange,
+      handleCurrentChange,
+      commentTimeFormat, // 格式化 评论时间
+
+    }
+
+
+    
+  },
+  /* computed: {
     // 播放次数格式化
     playCountFormat() {
       let _this = this as any;
@@ -223,8 +519,8 @@ export default defineComponent({
       let _this = this as any;
       return numberToDateFormat(_this.createTime);
     },
-  },
-  mounted() {
+  }, */
+ /*  mounted() {
     let _this = this as any;
     // loading
     console.log("this", this);
@@ -302,9 +598,9 @@ export default defineComponent({
         });
       }
     });
-  },
-  methods: {
-    // 展开歌单简介
+  }, */
+  // methods: {
+    /* // 展开歌单简介
     foldChange() {
       let _this = this as any;
       _this.isFoldDescription = !_this.isFoldDescription;
@@ -419,8 +715,8 @@ export default defineComponent({
     // 格式化 评论时间
     commentTimeFormat(time: number) {
       return numberToTimeDistanceFormat(time);
-    },
-  },
+    }, */
+  // },
 });
 </script>
 

@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-18 15:52:02
- * @LastEditTime: 2021-01-19 15:03:38
+ * @LastEditTime: 2021-01-25 11:51:38
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\TopPlaylist\index.vue
@@ -108,14 +108,14 @@ import {
   getPlaylistCatlist,
 } from "@/api/SongSheet/index";
 import { SongSheetCom } from "@/components";
-import { defineComponent } from "vue";
+import { defineComponent, onMounted, reactive, ref, getCurrentInstance } from "vue";
 
 export default defineComponent({
   name: "SongSheet",
   components: {
     SongSheetCom,
   },
-  data() {
+  /* data() {
     return {
       topPlaylistOneInfo: {}, // 精品歌单信息
       tagsArr: [], // 标签分类数组
@@ -126,8 +126,261 @@ export default defineComponent({
       currentSongSheetInfo: [], // 当前歌单信息列表
       tagTitleObj: {},
     };
+  }, */
+  setup() {
+    let topPlaylistOneInfo: any = ref({}); // 精品歌单信息
+    const tagsArr = ref([]); // 标签分类数组
+    const currentTag = ref("全部"); // 当前标签
+    let playlistObjByCat: any = reactive({}); // cat 分类歌单数组
+    const currentPage = ref(1); // 当前页
+    const totalPage = ref(0); // 一共多少页
+    const currentSongSheetInfo: any = ref([]); // 当前歌单信息列表
+    let tagTitleObj: any = reactive({});
+
+    const instance: any = getCurrentInstance();
+    const root = instance.ctx.$root;
+
+
+    // mounted
+    onMounted(() => {
+      // let _this = this as any;
+
+      // 获取 tag 全部的精品歌单（1个）
+      getPlaylistHighquality().then((res) => {
+        let data = (res as any).data;
+        if (data.code === 200) {
+          let { name, copywriter, coverImgUrl } = data.playlists[0];
+          topPlaylistOneInfo.value= {
+            name,
+            copywriter,
+            coverImgUrl,
+          };
+        }
+      });
+      // hot 获取标签分类
+      getPlaylistHot().then((res) => {
+        let data = (res as any).data;
+        if (data.code === 200) {
+          tagsArr.value = data.tags;
+        }
+      });
+      // 获取全部标签分类
+      getPlaylistCatlist().then((res) => {
+        let data = (res as any).data;
+        if (data.code === 200) {
+          let categories = Object.assign({}, data.categories);
+          console.log("getPlaylistCatlist", data);
+          for (let key in categories) {
+            tagTitleObj[categories[key]] = [];
+          }
+          data.sub.forEach((cat: any) => {
+            tagTitleObj[categories[cat.category]].push(cat);
+          });
+        }
+      });
+      const loading = root.$loading({
+        target: document.getElementsByClassName(
+          "top-playlist-songSheet-content"
+        )[0],
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      // 获取全部分类中的歌单（100个）
+      if (!playlistObjByCat["全部"]) {
+        playlistObjByCat["全部"] = [];
+        getTopPlaylist(1).then((res) => {
+          let data = (res as any).data;
+          if (data.code === 200) {
+            let { cat, playlists, total } = data;
+            totalPage.value = total;
+            let newplaylistsArr = playlists.map(
+              (playlist: any, index: number) => {
+                let list = {
+                  id: playlist.id,
+                  name: playlist.name,
+                  picUrl: playlist.coverImgUrl,
+                  playCount: playlist.playCount,
+                };
+                playlistObjByCat[cat][index] = list;
+                return list;
+              }
+            );
+            currentSongSheetInfo.value = newplaylistsArr;
+            loading.close();
+          }
+        });
+      } else {
+        currentSongSheetInfo.value = playlistObjByCat["全部"].filter(
+          (playlist: any, index: number) => index < 100
+        );
+        loading.close();
+      }
+    });
+
+
+
+    // methods
+    // 标签修改点击事件
+    const tagChangeClickHandle = (tagName: string) => {
+      let loading = root.$loading({
+        target: document.getElementsByClassName(
+          "top-playlist-songSheet-content"
+        )[0],
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      currentTag.value = tagName;
+      currentPage.value = 1;
+      if (!playlistObjByCat[tagName]) {
+        playlistObjByCat[tagName] = [];
+      }
+      let page = currentPage.value;
+      let cat = tagName;
+      if (
+        playlistObjByCat[cat] ||
+        playlistObjByCat[cat][(page - 1) * 100] !== undefined
+      ) {
+        getTopPlaylist(page, cat).then((res) => {
+          let data = (res as any).data;
+          if (data.code === 200) {
+            let { cat, playlists, total } = data;
+            totalPage.value = total;
+            let newplaylistsArr = playlists.map(
+              (playlist: any, index: number) => {
+                let list = {
+                  id: playlist.id,
+                  name: playlist.name,
+                  picUrl: playlist.coverImgUrl,
+                  playCount: playlist.playCount,
+                };
+                playlistObjByCat[cat][index] = list;
+                return list;
+              }
+            );
+            currentSongSheetInfo.value = newplaylistsArr;
+            loading.close();
+          }
+        });
+      } else {
+        let currentPageNum = totalPage.value - (page - 1) * 100;
+        currentSongSheetInfo.value = [];
+        if (currentPageNum > 100) {
+          for (let i = 0, l = 100; i < l; i++) {
+            currentSongSheetInfo[i] =
+              playlistObjByCat[cat][(page - 1) * 100 + i];
+          }
+        } else {
+          for (let ii = 0, ll = currentPageNum; ii < ll; ii++) {
+            currentSongSheetInfo[ii] =
+              playlistObjByCat[cat][(page - 1) * 100 + ii];
+          }
+        }
+        loading.close();
+      }
+      // 请求获得对应 cat 精品歌单
+      getPlaylistHighquality(tagName).then((res) => {
+        let data = (res as any).data;
+        if (data.code === 200) {
+          let { name, copywriter, coverImgUrl } = data.playlists[0];
+          topPlaylistOneInfo.value = {
+            name,
+            copywriter,
+            coverImgUrl,
+          };
+        }
+      });
+    };
+    // 点击歌单事件
+    const songSheetClickHandle = (id: number) => {
+      root.$router.push(`/songlists/${id}`);
+    };
+    // 分页事件
+    const handleSizeChange = (val: number) => {
+      console.log(`每页 ${val} 条`);
+    };
+
+    const handleCurrentChange = (val: number) => {
+      let loading = root.$loading({
+        target: document.getElementsByClassName(
+          "top-playlist-songSheet-content"
+        )[0],
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      let cat = currentTag.value;
+      let tag = currentTag.value;
+      let currentFirstIndex = (val - 1) * 100;
+      if (!playlistObjByCat[cat]) {
+        playlistObjByCat[cat] = [];
+      }
+      if (
+        // !_this.playlistObjByCat[cat] ||
+        !playlistObjByCat[cat][currentFirstIndex]
+      ) {
+        getTopPlaylist(val, tag).then((res) => {
+          let data = (res as any).data;
+          if (data.code === 200) {
+            let { cat, playlists, total } = data;
+            totalPage.value = total;
+            let newplaylistsArr = playlists.map(
+              (playlist: any, index: number) => {
+                let list = {
+                  id: playlist.id,
+                  name: playlist.name,
+                  picUrl: playlist.coverImgUrl,
+                  playCount: playlist.playCount,
+                };
+                playlistObjByCat[cat][currentFirstIndex + index] = list;
+                return list;
+              }
+            );
+            currentSongSheetInfo.value = newplaylistsArr;
+            loading.close();
+          }
+        });
+      } else {
+        let currentPageNum = totalPage.value - (val - 1) * 100;
+        currentSongSheetInfo.value = [];
+        if (currentPageNum > 100) {
+          for (let i = 0, l = 100; i < l; i++) {
+            currentSongSheetInfo[i] =
+              playlistObjByCat[cat][(val - 1) * 100 + i];
+          }
+        } else {
+          for (let ii = 0, ll = currentPageNum; ii < ll; ii++) {
+            currentSongSheetInfo[ii] =
+              playlistObjByCat[cat][(val - 1) * 100 + ii];
+          }
+        }
+        loading.close();
+      }
+    };
+
+
+    return {
+      topPlaylistOneInfo, // 精品歌单信息
+      tagsArr, // 标签分类数组
+      currentTag, // 当前标签
+      playlistObjByCat: {}, // cat 分类歌单数组
+      currentPage, // 当前页
+      totalPage, // 一共多少页
+      currentSongSheetInfo, // 当前歌单信息列表
+      tagTitleObj,
+      // methods
+      tagChangeClickHandle,
+      songSheetClickHandle,
+      handleSizeChange,
+      handleCurrentChange,
+      
+    }
   },
-  mounted() {
+/*   mounted() {
     let _this = this as any;
 
     // 获取 tag 全部的精品歌单（1个）
@@ -202,8 +455,8 @@ export default defineComponent({
       );
       loading.close();
     }
-  },
-  methods: {
+  }, */
+  /* methods: {
     // 标签修改点击事件
     tagChangeClickHandle(tagName: string) {
       let _this = this as any;
@@ -344,7 +597,7 @@ export default defineComponent({
         loading.close();
       }
     },
-  },
+  }, */
 });
 </script>
 
