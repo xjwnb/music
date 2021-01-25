@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-18 15:52:02
- * @LastEditTime: 2021-01-25 11:51:38
+ * @LastEditTime: 2021-01-25 18:02:09
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\TopPlaylist\index.vue
@@ -131,7 +131,7 @@ export default defineComponent({
     let topPlaylistOneInfo: any = ref({}); // 精品歌单信息
     const tagsArr = ref([]); // 标签分类数组
     const currentTag = ref("全部"); // 当前标签
-    let playlistObjByCat: any = reactive({}); // cat 分类歌单数组
+    const playlistObjByCat: any = ref({}); // cat 分类歌单数组
     const currentPage = ref(1); // 当前页
     const totalPage = ref(0); // 一共多少页
     const currentSongSheetInfo: any = ref([]); // 当前歌单信息列表
@@ -188,8 +188,8 @@ export default defineComponent({
         background: "rgba(0, 0, 0, 0.7)",
       });
       // 获取全部分类中的歌单（100个）
-      if (!playlistObjByCat["全部"]) {
-        playlistObjByCat["全部"] = [];
+      if (!playlistObjByCat.value["全部"]) {
+        playlistObjByCat.value["全部"] = [];
         getTopPlaylist(1).then((res) => {
           let data = (res as any).data;
           if (data.code === 200) {
@@ -203,7 +203,7 @@ export default defineComponent({
                   picUrl: playlist.coverImgUrl,
                   playCount: playlist.playCount,
                 };
-                playlistObjByCat[cat][index] = list;
+                playlistObjByCat.value[cat][index] = list;
                 return list;
               }
             );
@@ -212,7 +212,7 @@ export default defineComponent({
           }
         });
       } else {
-        currentSongSheetInfo.value = playlistObjByCat["全部"].filter(
+        currentSongSheetInfo.value = playlistObjByCat.value["全部"].filter(
           (playlist: any, index: number) => index < 100
         );
         loading.close();
@@ -235,14 +235,14 @@ export default defineComponent({
       });
       currentTag.value = tagName;
       currentPage.value = 1;
-      if (!playlistObjByCat[tagName]) {
-        playlistObjByCat[tagName] = [];
+      if (!playlistObjByCat.value[tagName]) {
+        playlistObjByCat.value[tagName] = [];
       }
       let page = currentPage.value;
       let cat = tagName;
       if (
-        playlistObjByCat[cat] ||
-        playlistObjByCat[cat][(page - 1) * 100] !== undefined
+        playlistObjByCat.value[cat] ||
+        playlistObjByCat.value[cat][(page - 1) * 100] !== undefined
       ) {
         getTopPlaylist(page, cat).then((res) => {
           let data = (res as any).data;
@@ -257,7 +257,7 @@ export default defineComponent({
                   picUrl: playlist.coverImgUrl,
                   playCount: playlist.playCount,
                 };
-                playlistObjByCat[cat][index] = list;
+                playlistObjByCat.value[cat][index] = list;
                 return list;
               }
             );
@@ -271,12 +271,12 @@ export default defineComponent({
         if (currentPageNum > 100) {
           for (let i = 0, l = 100; i < l; i++) {
             currentSongSheetInfo[i] =
-              playlistObjByCat[cat][(page - 1) * 100 + i];
+              playlistObjByCat.value[cat][(page - 1) * 100 + i];
           }
         } else {
           for (let ii = 0, ll = currentPageNum; ii < ll; ii++) {
             currentSongSheetInfo[ii] =
-              playlistObjByCat[cat][(page - 1) * 100 + ii];
+              playlistObjByCat.value[cat][(page - 1) * 100 + ii];
           }
         }
         loading.close();
@@ -316,12 +316,12 @@ export default defineComponent({
       let cat = currentTag.value;
       let tag = currentTag.value;
       let currentFirstIndex = (val - 1) * 100;
-      if (!playlistObjByCat[cat]) {
-        playlistObjByCat[cat] = [];
+      if (!playlistObjByCat.value[cat]) {
+        playlistObjByCat.value[cat] = [];
       }
       if (
         // !_this.playlistObjByCat[cat] ||
-        !playlistObjByCat[cat][currentFirstIndex]
+        !playlistObjByCat.value[cat][currentFirstIndex]
       ) {
         getTopPlaylist(val, tag).then((res) => {
           let data = (res as any).data;
@@ -336,7 +336,7 @@ export default defineComponent({
                   picUrl: playlist.coverImgUrl,
                   playCount: playlist.playCount,
                 };
-                playlistObjByCat[cat][currentFirstIndex + index] = list;
+                playlistObjByCat.value[cat][currentFirstIndex + index] = list;
                 return list;
               }
             );
@@ -349,13 +349,13 @@ export default defineComponent({
         currentSongSheetInfo.value = [];
         if (currentPageNum > 100) {
           for (let i = 0, l = 100; i < l; i++) {
-            currentSongSheetInfo[i] =
-              playlistObjByCat[cat][(val - 1) * 100 + i];
+            currentSongSheetInfo.value[i] =
+              playlistObjByCat.value[cat][(val - 1) * 100 + i];
           }
         } else {
           for (let ii = 0, ll = currentPageNum; ii < ll; ii++) {
-            currentSongSheetInfo[ii] =
-              playlistObjByCat[cat][(val - 1) * 100 + ii];
+            currentSongSheetInfo.value[ii] =
+              playlistObjByCat.value[cat][(val - 1) * 100 + ii];
           }
         }
         loading.close();
@@ -367,7 +367,7 @@ export default defineComponent({
       topPlaylistOneInfo, // 精品歌单信息
       tagsArr, // 标签分类数组
       currentTag, // 当前标签
-      playlistObjByCat: {}, // cat 分类歌单数组
+      playlistObjByCat, // cat 分类歌单数组
       currentPage, // 当前页
       totalPage, // 一共多少页
       currentSongSheetInfo, // 当前歌单信息列表

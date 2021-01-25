@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-13 21:11:43
- * @LastEditTime: 2021-01-25 16:23:21
+ * @LastEditTime: 2021-01-25 17:22:11
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\SonglistsDetails\index.vue
@@ -31,7 +31,7 @@
         <div class="songlists-details-info-tags">标签：{{ tagFormat }}</div>
         <div class="songlists-details-info-msg">
           <div class="songlists-details-info-msg-trackCount">
-            歌曲：{{ trackCount }}
+            歌曲：{{ trackCounts }}
           </div>
           <div class="songlists-details-info-msg-playCount">
             播放：{{ playCountFormat }}
@@ -41,7 +41,7 @@
           <span>简介：</span>
           <span
             :class="isFoldDescription ? 'fold' : ''"
-            v-html="description.replace(/(\s)+/g, '<br />')"
+            v-html="descriptions.replace(/(\s)+/g, '<br />')"
           ></span>
         </div>
       </div>
@@ -68,7 +68,7 @@
           :key="tab.id"
           @click="tabChangeHandle(tab.alias)"
         >
-          {{ tab.tab }}{{ tab.alias === "comment" ? commentCount : "" }}
+          {{ tab.tab }}{{ tab.alias === "comment" ? commentCounts : "" }}
         </div>
       </div>
       <!-- 内容 -->
@@ -124,7 +124,7 @@
           v-model:currentPage="currentPage"
           background
           layout="prev, pager, next"
-          :total="commentCount"
+          :total="commentCounts"
           :page-size="20"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -176,7 +176,7 @@ import {
 
 export default defineComponent({
   name: "SonglistsDetails",
-  data() {
+  /* data() {
     return {
       id: "" as string, // 歌单 id
       coverImgUrl: "", // 歌单图片 url
@@ -212,7 +212,7 @@ export default defineComponent({
       commentArray: [], // 评论数组
       currentCommentArray: [], // 当前页的评论
     };
-  },
+  }, */
   setup() {
     const id = ref(""); // 歌单 id
     const coverImgUrls = ref(""); // 歌单图片 url

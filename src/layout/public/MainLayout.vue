@@ -303,6 +303,7 @@ export default defineComponent({
       }
       .header-right {
         display: flex;
+        justify-content: space-between;
         align-items: center;
         position: absolute;
         top: 0;
@@ -324,6 +325,7 @@ export default defineComponent({
         }
         .header-right-user-div {
           display: inline-block;
+          margin: 0 3rem;
           .header-right-user-login {
             cursor: pointer;
             color: #8a8a8a;
