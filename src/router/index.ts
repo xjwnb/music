@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-08 16:28:55
- * @LastEditTime: 2021-01-23 12:46:18
+ * @LastEditTime: 2021-01-25 19:34:46
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\router\index.ts
@@ -123,7 +123,9 @@ const routes: Array<RouteRecordRaw> = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  
+  // history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory("/music/"),
   routes
 })
 
