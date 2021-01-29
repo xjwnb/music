@@ -1,24 +1,82 @@
-# music
+# Music
 
-## Project setup
-```
-npm install
-```
+基于 Vue3、TypeScript 的仿网易云客户端。
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+### 功能
 
-### Compiles and minifies for production
-```
-npm run build
-```
+- 登录、退出登录（手机密码登录）
+- 个人推荐页
+  - 轮播图（只展示无效果）
+  - 推荐歌单
+  - 最新音乐
+- 歌单页
+  - 默认歌单分类（全部）
+  - 其他歌单分类（华语、流行、摇滚 ... ...）
+- 排行榜页
+  - 排行版歌单列表
+- 歌手页
+  - 歌手分类展示（语种、分类、筛选）、分页展示
+- 歌手详情页
+  - 歌手基本信息
+  - 专辑、歌手详情标签展示
+  - 专辑标签页
+    - 热门音乐（50首）
+    - 专辑内容歌曲（滚动加载专辑内容）
+  - 歌手详情标签页
+    - 歌手详情信息
+- 歌单详情页
+  - 歌单基本信息
+  - 歌曲列表、评论标签展示
+  - 歌曲列表标签页
+    - 歌曲表格展示
+  - 评论标签页
+    - 评论信息展示、分页展示
+- 专辑详情页
+  - 专辑基本信息
+  - 歌曲列表、专辑描述标签展示
+  - 歌曲列表标签页
+    - 歌曲列表表格展示
+  - 专辑描述标签页
+    - 专辑描述信息展示
+- 搜索结果展示详情页
+  - 单曲、歌手、歌单标签展示
+  - 单曲标签页
+    - 单曲表格展示
+  - 歌手标签页
+    - 歌手列表展示
+  - 歌单标签页
+    - 歌单列表展示
+- 底部播放器组件
+  - 播放、暂停
+  - 单曲循环、列表播放
+  - 音量控制（是否禁音、音量大小）
+  - 歌词滚动展示（需要播放音乐时，点击歌曲图片）
+- 搜索
+  - 输入搜索（防抖）
+  - 回车跳转目标搜索详情页
+  - 焦点展示热门搜索列表展示
+  - 搜索时搜索结果提示
 
-### Lints and fixes files
-```
-npm run lint
-```
+### 涉及技术
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+- Vue3.0
+- TypeScript
+- Vuex
+- Vue-Router
+- ES6
+
+
+
+### 使用的第三方
+
+- 事件 [mitt](https://github.com/developit/mitt)
+- Element Plus UI 组件库 [Element Plus](https://element-plus.org/#/zh-CN)
+
+
+
+### 感谢
+
+感谢大佬的接口！
+
+大佬 Github：[网易云音乐 Node.js API](https://github.com/Binaryify/NeteaseCloudMusicApi)
+
