@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-10 15:31:48
- * @LastEditTime: 2021-01-23 21:19:18
+ * @LastEditTime: 2021-01-27 15:43:47
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\components\index.ts
@@ -16,6 +16,9 @@ import LatestMusic from "./LatestMusic/index.vue";
 import Singer from "./Singer/index.vue";
 import AlbumDetail from "./AlbumDetail/index.vue";
 import Drawer from "./Drawer/index.vue";
+import Search from "./Search/index.vue";
+import SongHotList from "./SongHotList/index.vue";
+import Tabs from "./Tabs/index.vue";
 
 
 /**
@@ -35,3 +38,9 @@ export const SingerCom = Singer;
 export const AlbumDetailCom = AlbumDetail;
 // 抽屉
 export const DrawerCom = Drawer;
+// 搜索
+export const SearchCom = Search;
+// 热门歌曲列表
+export const SongHotListCom = SongHotList;
+// 标签页
+export const TabsCom = Tabs;

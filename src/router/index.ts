@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-08 16:28:55
- * @LastEditTime: 2021-01-25 19:34:46
+ * @LastEditTime: 2021-01-27 13:00:39
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\router\index.ts
@@ -45,7 +45,7 @@ const routes: Array<RouteRecordRaw> = [
         path: "singerDetial/:id",
         name: "SingerDetail",
         component: () => import(/* webpackChunkName: "SingerDetail" */ "@/views/SingerDetail/index.vue")
-      }
+      },
     ]
   },
   // {
@@ -86,7 +86,7 @@ const routes: Array<RouteRecordRaw> = [
         name: "DiscoverInfo",
         redirect: { name: "Recommend" },
         // component: () => import(/* webpackChunkName: "Recommend" */ "@/views/Recommend/index.vue")
-        
+
       },
       {
         path: "recommend",  // 推荐
@@ -118,12 +118,18 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import(/* webpackChunkName: "LatestMusic" */ "@/views/LatestMusic/index.vue"),
         meta: { keepAlive: true }
       },
+      {
+        path: "search",
+        name: "Search",
+        component: () => import(/* webpackChunkName: "Search" */ "@/views/SearchKeyword/index.vue"),
+        props: (route) => ({ query: route.query.keyword })
+      }
     ]
   }
 ]
 
 const router = createRouter({
-  
+
   // history: createWebHistory(process.env.BASE_URL),
   history: createWebHistory("/music/"),
   routes

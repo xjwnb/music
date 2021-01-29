@@ -110,7 +110,9 @@
               :key="index"
               :class="[
                 'drawer-content-right-lyric',
-                lyr.playTime <= time && lyric[index + 1].playTime > time
+                lyric[index + 1] &&
+                lyr.playTime <= time &&
+                lyric[index + 1].playTime > time
                   ? 'drawer-lyr-active'
                   : '',
               ]"
@@ -187,6 +189,7 @@ export default defineComponent({
       let drawerLyrContentEle: any;
       let drawerContentRightEle: any;
       let drawerContentRightClientHeight: any;
+      let offsetTop: number;
       if (_this.isshowTop) {
         _this.$nextTick(() => {
           drawerActiveEle = document.getElementsByClassName(
@@ -198,7 +201,9 @@ export default defineComponent({
           drawerContentRightClientHeight = drawerContentRightEle.clientHeight;
           drawerActiveEleLength = drawerActiveEle.length;
           drawerActiveEle = drawerActiveEle[drawerActiveEleLength - 1];
-          let offsetTop = drawerActiveEle.offsetTop;
+          if (drawerActiveEle) {
+            offsetTop = drawerActiveEle.offsetTop;
+          }
           drawerLyrContentEle = document.getElementsByClassName(
             "drawer-content-right-lyric-content"
           )[0];
@@ -221,6 +226,13 @@ export default defineComponent({
     id(newVal) {
       let _this = this as any;
       let lyr: string = "";
+      const loading = _this.$loading({
+        target: document.getElementsByClassName("drawer-content-right")[0],
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
       getSongLyric(newVal).then((res) => {
         let data = (res as any).data;
         if (data.code === 200) {
@@ -242,6 +254,7 @@ export default defineComponent({
             }
           });
           _this.lyric = newlyrArr;
+          loading.close();
         }
       });
     },
@@ -715,7 +728,7 @@ export default defineComponent({
     padding: 1rem;
     overflow: hidden;
     .drawer-content-right-lyric-content {
-      transition: all .5s;
+      transition: all 0.5s;
       .drawer-content-right-lyric {
         margin: 1rem auto;
       }
