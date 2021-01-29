@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-13 21:11:43
- * @LastEditTime: 2021-01-25 17:22:11
+ * @LastEditTime: 2021-01-29 21:05:00
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\SonglistsDetails\index.vue
@@ -28,7 +28,7 @@
         <!-- <div class="songlists-details-info-btn">
           <el-button>哈哈哈</el-button>
         </div> -->
-        <div class="songlists-details-info-tags">标签：{{ tagFormat }}</div>
+        <div v-if="tagFormat" class="songlists-details-info-tags">标签：{{ tagFormat }}</div>
         <div class="songlists-details-info-msg">
           <div class="songlists-details-info-msg-trackCount">
             歌曲：{{ trackCounts }}

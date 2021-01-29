@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-27 12:43:13
- * @LastEditTime: 2021-01-28 21:23:07
+ * @LastEditTime: 2021-01-29 21:31:23
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\SearchKeyword\index.vue
@@ -126,6 +126,9 @@ import {
   AUDIO_INFO_CHANGE,
 } from "@/store/mutation-types";
 import { AUDIO_ID, AUDIO_INFO, AUDIO_LIST } from "@/store/state-types";
+// 接口
+import { tabsInterface } from "@/interface/views/tab";
+
 import {
   defineComponent,
   onMounted,
@@ -146,7 +149,7 @@ export default defineComponent({
     const keyword = ref(root.$route.query.keyword);
     // const keyword =
     // 标签
-    const tabs = reactive([
+    const tabs = reactive<tabsInterface[]>([
       {
         id: 1,
         name: "单曲",

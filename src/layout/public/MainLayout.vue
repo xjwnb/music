@@ -108,6 +108,7 @@
                         <div
                           v-for="album in result"
                           class="search-song-search-result-item"
+                          @click="searchAlbumsClickHandle(album.id)"
                         >
                           <span class="search-song-search-result-item-name">{{
                             album.name
@@ -464,7 +465,12 @@ export default defineComponent({
         path: "search",
         query: { keyword: val },
       });
-    }
+    };
+
+    // 搜索专辑点击事件
+    const searchAlbumsClickHandle = (id: number) => {
+      root.$router.push(`/albumDetail/${id}`);
+    };
 
     return {
       isLogin,
@@ -491,6 +497,7 @@ export default defineComponent({
       searchPlaylistsClickHandle, // 点击歌单搜索结果
       searchSongClickHandle,
       searchEnterHandle, // 搜索回车事件
+      searchAlbumsClickHandle, // 专辑搜索点击事件
     };
   },
   /* data() {
