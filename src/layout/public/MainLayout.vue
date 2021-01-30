@@ -243,6 +243,7 @@ import {
 import { AUDIO_ID, AUDIO_INFO, AUDIO_LIST } from "@/store/state-types";
 // interface
 import { AudioInfoInterface } from "@/interface/public/audio";
+import { useRoute, useRouter } from "vue-router";
 
 export default defineComponent({
   name: "MainLayout",
@@ -265,11 +266,15 @@ export default defineComponent({
     let searchResult: any = reactive({});
 
     const instance: any = getCurrentInstance();
-    const root = instance.ctx.$root;
+    const root = instance.proxy;
+    console.log("instance", instance);
+    const route = useRoute();
+    const router = useRouter();
 
     // computed
     const navDefaultActive = computed(() => {
-      return formatPath(root.$route.path);
+      // return formatPath(root.$route.path);
+      return formatPath(route.path);
     });
     const navChildrenDefaultActive = computed(() => {
       return root.$route.path;
@@ -277,7 +282,7 @@ export default defineComponent({
 
     // watch
     watch(
-      () => root.$route,
+      () => route,
       (to: any, from: any) => {
         let toPath: string = to.path;
         // 正则判断 path

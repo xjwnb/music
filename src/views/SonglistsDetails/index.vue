@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-13 21:11:43
- * @LastEditTime: 2021-01-29 21:05:00
+ * @LastEditTime: 2021-01-30 12:17:41
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\SonglistsDetails\index.vue
@@ -249,7 +249,7 @@ export default defineComponent({
     const currentCommentArray : any = ref([]); // 当前页的评论
 
     const instance: any = getCurrentInstance();
-    const root = instance.ctx.$root;
+    const root = instance.proxy;
 
 
     // computed

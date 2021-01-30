@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-22 13:21:34
- * @LastEditTime: 2021-01-25 13:35:44
+ * @LastEditTime: 2021-01-30 12:17:25
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\SingerDetail\index.vue
@@ -159,7 +159,7 @@ export default defineComponent({
     const id = ref(0); // 歌手 ID
 
     const instance: any = getCurrentInstance();
-    const root = instance.ctx.$root;
+    const root = instance.proxy;
 
     onMounted(() => {
       let ids = root.$route.params.id;

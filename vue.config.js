@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-08 17:09:01
- * @LastEditTime: 2021-01-29 23:54:16
+ * @LastEditTime: 2021-01-30 11:05:50
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\vue.config.js
@@ -15,12 +15,12 @@ module.exports = {
   configureWebpack: {
     devServer: {
       proxy: {
-        "/api": {
+        "/musicApi": {
           target: "http://127.0.0.1:3333",
           ws: true,
           changeOrigin: true,
           pathRewrite: {
-            "^/api": ""
+            "^/musicApi": ""
           }
         }
       }

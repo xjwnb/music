@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-27 12:43:13
- * @LastEditTime: 2021-01-29 21:31:23
+ * @LastEditTime: 2021-01-30 12:17:00
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\SearchKeyword\index.vue
@@ -145,7 +145,7 @@ export default defineComponent({
   },
   setup() {
     const instance: any = getCurrentInstance();
-    const root = instance.ctx.$root;
+    const root = instance.proxy;
     const keyword = ref(root.$route.query.keyword);
     // const keyword =
     // 标签

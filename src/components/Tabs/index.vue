@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-27 15:26:42
- * @LastEditTime: 2021-01-29 21:27:53
+ * @LastEditTime: 2021-01-30 12:19:03
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\components\Tabs\index.vue
@@ -34,7 +34,6 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     let prop: any = toRefs(props);
-    console.log(prop);
     let name = prop.data.value && prop.data.value[0].name;
     const currentTab = ref(name);
     const clickTabHandle = (tab: any, index: number) => {

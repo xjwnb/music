@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-18 15:52:02
- * @LastEditTime: 2021-01-25 18:02:09
+ * @LastEditTime: 2021-01-30 12:17:52
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\TopPlaylist\index.vue
@@ -138,7 +138,7 @@ export default defineComponent({
     let tagTitleObj: any = reactive({});
 
     const instance: any = getCurrentInstance();
-    const root = instance.ctx.$root;
+    const root = instance.proxy;
 
 
     // mounted

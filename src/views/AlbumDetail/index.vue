@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2021-01-29 17:04:30
- * @LastEditTime: 2021-01-29 23:46:08
+ * @LastEditTime: 2021-01-30 12:15:33
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\views\AlbumDetail\index.vue
@@ -102,7 +102,7 @@ export default defineComponent({
   },
   setup() {
     const instance: any = getCurrentInstance();
-    const root = instance.ctx.$root;
+    const root = instance.proxy;
 
     const id = root.$route.params.id;
 
