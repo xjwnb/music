@@ -2,6 +2,8 @@
 
 基于 Vue3、TypeScript 的仿网易云客户端。
 
+链接：[music链接](http://120.27.238.251/music/discover/recommend)
+
 ### 功能
 
 - 登录、退出登录（手机密码登录）
