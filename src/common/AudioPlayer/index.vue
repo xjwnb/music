@@ -212,6 +212,7 @@ export default defineComponent({
           }px)`;
         });
       }
+
       _this.nowTimeFormat = numberToTimeFormat(newVal);
     },
     isplay(newVal) {
@@ -287,6 +288,7 @@ export default defineComponent({
   mounted() {
     // store.commit("formatState");
     let _this = this as any;
+    let drawerLyrContentEle: any; // 歌词div;
     console.log(_this);
     let audio = document.getElementsByTagName("audio")[0];
     // 设置是否循环
@@ -321,6 +323,11 @@ export default defineComponent({
           }, 1000);
         }
       }
+      // 播放结束之后重置歌词位置
+      drawerLyrContentEle = document.getElementsByClassName(
+        "drawer-content-right-lyric-content"
+      )[0];
+      drawerLyrContentEle.style.transform = `translateY(0px)`;
     });
     // 数据请求异常失败
     audio.addEventListener("error", function () {
@@ -356,6 +363,11 @@ export default defineComponent({
       _this.timeInterval = setInterval(() => {
         this.time++;
       }, 1000);
+      // 开始播放重置歌词位置
+      drawerLyrContentEle = document.getElementsByClassName(
+        "drawer-content-right-lyric-content"
+      )[0];
+      drawerLyrContentEle.style.transform = `translateY(0px)`;
     });
     audio.addEventListener("loadstart", () => {
       console.log("loadstart");

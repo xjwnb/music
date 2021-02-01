@@ -282,7 +282,7 @@ export default defineComponent({
 
     // watch
     watch(
-      () => route,
+      () => root.$route,
       (to: any, from: any) => {
         let toPath: string = to.path;
         // 正则判断 path
