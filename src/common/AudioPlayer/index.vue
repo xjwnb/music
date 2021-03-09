@@ -391,9 +391,9 @@ export default defineComponent({
           if (_this.audio.paused) {
             // _this.audio.play();
             _this.isplay = true;
-            _this.timeInterval = setInterval(() => {
+            /* _this.timeInterval = setInterval(() => {
               this.time++;
-            }, 1000);
+            }, 1000); */
           }
         }, 50);
         return;
@@ -421,11 +421,11 @@ export default defineComponent({
       // (this as any).audio.addEventListener("onloadedmetadata", () => {
       _this.playTimeout = setTimeout(() => {
         if (_this.audio.paused) {
-          _this.audio.play();
+          // _this.audio.play();
           _this.isplay = true;
-          _this.timeInterval = setInterval(() => {
+          /*  _this.timeInterval = setInterval(() => {
             this.time++;
-          }, 1000);
+          }, 1000); */
         }
       }, 50);
       // });
