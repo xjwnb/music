@@ -187,7 +187,14 @@
             
           </router-view> -->
           <div class="main-content">
-            <router-view></router-view>
+            <!-- <router-view></router-view> -->
+            <router-view v-slot="{ Component }">
+              <keep-alive
+                :include="['Recommend', 'SongSheet', 'RankingList', 'Singer']"
+              >
+                <component :is="Component" />
+              </keep-alive>
+            </router-view>
             <!-- <keep-alive>
               <router-view v-if="$route.meta.keepAlive" ></router-view>
             </keep-alive>
@@ -234,6 +241,12 @@ import AudioPlayer from "@/common/AudioPlayer/index.vue";
 import { ElMessage } from "element-plus";
 // 组件
 import { SearchCom, SongHotListCom } from "@/components";
+// 页面
+// import SonglistsDetails from "@/views/SonglistsDetails/index.vue";
+import Recommend from "@/views/Recommend/index.vue";
+import SongSheet from "@/views/SongSheet/index.vue";
+import RankingList from "@/views/RankingList/index.vue";
+import Singer from "@/views/Singer/index.vue";
 // vuex
 import {
   AUDIO_ID_CHANGE,
@@ -251,6 +264,10 @@ export default defineComponent({
     AudioPlayer,
     SearchCom,
     SongHotListCom,
+    Recommend,
+    SongSheet,
+    RankingList,
+    Singer,
   },
   setup(props, { attrs, slots, emit }) {
     let isLogin = ref(false);

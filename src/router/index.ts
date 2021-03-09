@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-08 16:28:55
- * @LastEditTime: 2021-01-29 17:14:47
+ * @LastEditTime: 2021-03-09 22:16:46
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \music\src\router\index.ts
@@ -31,7 +31,8 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "songlists/:id",  // 歌单
         name: "Songlists",
-        component: () => import(/* webpackChunkName: "Songlists" */ "@/views/SonglistsDetails/index.vue")
+        component: () => import(/* webpackChunkName: "Songlists" */ "@/views/SonglistsDetails/index.vue"),
+        meta: { keepAlive: false }
       },
       {
         path: 'about',
@@ -39,17 +40,20 @@ const routes: Array<RouteRecordRaw> = [
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+        component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
+        meta: { keepAlive: false }
       },
       {
         path: "singerDetial/:id",
         name: "SingerDetail",
-        component: () => import(/* webpackChunkName: "SingerDetail" */ "@/views/SingerDetail/index.vue")
+        component: () => import(/* webpackChunkName: "SingerDetail" */ "@/views/SingerDetail/index.vue"),
+        meta: { keepAlive: false }
       },
       {
         path: "albumDetail/:id",
         name: "AlbumDetail",
-        component: () => import(/* webpackChunkName: "AlbumDetail" */ "@/views/AlbumDetail/index.vue")
+        component: () => import(/* webpackChunkName: "AlbumDetail" */ "@/views/AlbumDetail/index.vue"),
+        meta: { keepAlive: false }
       }
     ]
   },
